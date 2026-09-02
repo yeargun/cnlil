@@ -22,8 +22,9 @@ const cards = [
 document.querySelector("#perf-cards").innerHTML = cards.map(([label, row], index) =>
   `<article class="perf-card ${row.ratio <= 1 ? "win" : ""} ${index === 3 ? "geo" : ""}"><strong>${index === 3 ? format.format(row.lilNs) : ratio(row.ratio)}</strong><span>${label}</span></article>`
 ).join("")
+const spread = (row) => row.ratioLow == null ? "" : `<span class="range">${row.ratioLow.toFixed(2)}–${row.ratioHigh.toFixed(2)}</span>`
 document.querySelector("#perf-body").innerHTML = data.benchmark.rows.map((row) =>
-  `<tr><th>${row.kind}: ${row.workload}</th><td>${ns(row.lilNs)}</td><td>${ns(row.officialNs)}</td><td class="verdict ${row.ratio <= 1 ? "win" : "loss"}"><strong>${ratio(row.ratio)}</strong></td></tr>`
+  `<tr><th>${row.kind}: ${row.workload}</th><td>${ns(row.lilNs)}</td><td>${ns(row.officialNs)}</td><td class="verdict ${row.ratio <= 1.0 ? "win" : "loss"}"><strong>${ratio(row.ratio)}</strong>${spread(row)}</td></tr>`
 ).join("")
 document.querySelector("#perf-note").textContent = `${data.benchmark.node} · ${data.benchmark.platform}. ${data.benchmark.methodology}.`
 

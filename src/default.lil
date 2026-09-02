@@ -103,19 +103,23 @@ string resolveArguments(JsValue[] values, bool alreadyProbed) {
   while (index < argumentLength) {
     JsValue value = values[index];
     if (value.truthy()) {
-      if (!(value is string)) {
+      // Both arms hand the loop a `string`, so recording the first one is an assignment and
+      // not a coercion: `JS.string(value)` on a JsValue emits `value+""` even where the guard
+      // has already proven it a string, and this runs on every call (finer 049).
+      string text = "";
+      if (value is string) text = value;
+      else {
         // objects and arrays resolve in place and ride the string path
-        string resolved = resolveValue(value, true);
-        values[index] = resolved;
-        if (resolved == "") {
+        text = resolveValue(value, true);
+        values[index] = text;
+        if (text == "") {
           index = index + 1;
           continue;
         }
-        value = resolved;
         resolvedAValue = true;
       }
       if (firstIndex < 0) {
-        first = JS.string(value);
+        first = text;
         firstIndex = index;
       }
       truthy = truthy + 1;

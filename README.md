@@ -18,6 +18,9 @@ cn("px-2 py-1", false, "px-4") // "py-1 px-4"
 
 - 56,353 upstream correctness cases, 300,000 seeded grammar-fuzz cases, 60,005 joining and
   `clsx` cases: 416,358 comparisons, zero mismatches
+- benchmarked against upstream in interleaved rounds on an idle machine, reported as the median
+  of the per-round ratios with its range: `arb` 0.96, `repeat` 1.00, `workset` 1.02, `short` 1.03,
+  `single` 1.04, `loop` 1.06, `ssr` and `long` 1.09, `dup-loop` 1.12
 - smaller than upstream's own esbuild-minified bundle under raw, gzip and Brotli at the same
   boundary ([sizes report](reports/sizes.json); the canonical `lilscript-codec` numbers are
   26,696 / 10,509 / 9,401 against 27,459 / 10,835 / 9,783)
@@ -28,11 +31,12 @@ cn("px-2 py-1", false, "px-4") // "py-1 px-4"
 
 This is a default-runtime milestone, not yet a full package-surface replacement. The upstream
 custom-config compiler, `cn/config`, `cn/compiler`, CLI, and compatible public `createEngine` API
-are not implemented. The runtime target is not met yet: the committed
+are not implemented. The runtime target is not met on every lane: the committed
 [isolated-process report](reports/benchmark.json) is authoritative, the Pages site deliberately
 displays regressions, and the remaining gap is attributed in the LilScript workstream
-(`finer/hypotheses/048-*` in the compiler repository: module-scope state, the argument-cache
-paths).
+(`finer/hypotheses/048-*` and `049-*` in the compiler repository). What is left is one compiler
+item: a `string[]` element read carries a `|| ""` hole guard, and on the argument-cache walk that
+guard alone is the difference between 1.09 and 1.04 on `dup-loop`.
 
 ## Reproduce
 
