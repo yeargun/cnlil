@@ -1,0 +1,35 @@
+[package]
+name = "cnlil"
+version = "0.2.4"
+abi = 1
+entry = "src/index.lil"
+
+[optimization]
+preset = "maximum"
+call_site_specialization = true
+identical_function_folding = true
+
+[javascript]
+priority = "performance-first"
+optimization_level = 8
+cost_model = "brotli"
+public_aggregate_abi = "positional"
+assume_pristine_builtins = true
+strip_console = true
+pool_numeric_literals = true
+candidate_search = "off"
+candidate_limit = 1536
+candidate_byte_budget = 1048576
+candidate_beam_width = 12
+local_name_reserve = 48
+stable_local_names = true
+function_spelling = "function"
+
+[mangle]
+identifiers = true
+properties = false
+exports = false
+pool_strings = true
+
+[bundle]
+mode = "single"

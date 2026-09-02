@@ -1,0 +1,79 @@
+import { ArgumentEntry, CnCache, MergeEngine, resolveValue } from "./engine.lil";
+import { defaultTables } from "./tables.lil";
+
+MergeEngine defaultEngine = new MergeEngine(defaultTables, 8192, "");
+CnCache defaultArgumentCache = new CnCache(defaultEngine);
+ArgumentEntry? defaultLastHit = null;
+Record<string> defaultStringCache = defaultEngine.cache;
+
+string finishArgumentMiss(JsValue args, bool probed) {
+  defaultArgumentCache.lastHit = defaultLastHit;
+  string result = defaultArgumentCache.resolveArguments(args, probed);
+  defaultLastHit = defaultArgumentCache.lastHit;
+  defaultStringCache = defaultEngine.cache;
+  return result;
+}
+
+string mergeSingle(string input) {
+  string? cached = defaultStringCache[input];
+  if (cached != null) return cached;
+  string result = defaultEngine.mergeStringMiss(input);
+  defaultStringCache = defaultEngine.cache;
+  return result;
+}
+
+export JsValue cn = JS.staticRest((JsValue args) => {
+  float length = args.length;
+  if ((length.toInt() | 1) == 3) {
+    JsValue valueZero = args[0];
+    JsValue valueOne = args[1];
+    JsValue valueTwo = args[2];
+    ArgumentEntry? last = defaultLastHit;
+    if (last != null) {
+      JsValue predictionValue = last.n;
+      if (predictionValue.truthy()) {
+        ArgumentEntry prediction = JS.assume(predictionValue);
+        if (defaultArgumentCache.matchThree(prediction, valueZero, valueOne, valueTwo)) {
+          defaultLastHit = prediction;
+          return prediction.r;
+        }
+      }
+      if (!JS.strictEqual(last, predictionValue) && defaultArgumentCache.matchThree(last, valueZero, valueOne, valueTwo)) return last.r;
+    }
+    return finishArgumentMiss(args, true);
+  }
+  if (length == 1) {
+    JsValue only = args[0];
+    if (only is string) return mergeSingle(only);
+    return mergeSingle(resolveValue(only, true));
+  }
+  defaultArgumentCache.lastHit = defaultLastHit;
+  string result = defaultArgumentCache.call(args);
+  defaultLastHit = defaultArgumentCache.lastHit;
+  defaultStringCache = defaultEngine.cache;
+  return result;
+});
+
+export JsValue twMerge = JS.staticRest((JsValue args) => {
+  if (args.length == 1.0) {
+    JsValue only = args[0];
+    if (only is string) return mergeSingle(only);
+  }
+  string joined = "";
+  int index = 0;
+  int length = args.length.toInt();
+  while (index < length) {
+    JsValue value = args[index];
+    if (value.truthy()) {
+      string resolved = "";
+      if (value is string) resolved = value;
+      else resolved = resolveValue(value, false);
+      if (resolved != "") {
+        if (joined != "") joined = joined + " ";
+        joined = joined + resolved;
+      }
+    }
+    index = index + 1;
+  }
+  return mergeSingle(joined);
+});

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="@itslil/cn is cn@0.2.4 rewritten in LilScript with differential parity and isolated-process performance receipts." />
+    <meta name="theme-color" content="#c9a227" />
+    <title>itslil/cn — cn@0.2.4 through LilScript</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"></div>
+    <header class="nav shell">
+      <a class="wordmark" href="#top" aria-label="itslil/cn home"><span class="mark">cn</span><span>itslil/cn</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#performance">performance</a>
+        <a href="#lab">playground</a>
+        <a href="#evidence">size</a>
+        <a href="https://github.com/yeargun/cnlil">GitHub ↗</a>
+      </nav>
+    </header>
+    <main id="top">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot"></span> cn@0.2.4 · LilScript port · @itslil/cn</p>
+          <h1>Classes,<br /><em>resolved.</em></h1>
+          <p class="lede">The pinned <code>shadcn-ui/cn</code> merge engine and cache architecture rewritten with LilScript typed primitives. The upstream differential suites are the oracle. Not affiliated with upstream.</p>
+          <div class="install-row"><code>npm install github:yeargun/cnlil</code><button class="copy" data-copy="npm install github:yeargun/cnlil" type="button">copy</button></div>
+          <div class="hero-actions"><a class="button primary" href="#performance">Numbers</a><a class="button secondary" href="https://github.com/yeargun/cnlil">Source ↗</a></div>
+        </div>
+        <div class="scoreboard" aria-label="Current verification status">
+          <div class="score-main">
+            <span class="score-label">Differential checks against the pinned upstream and its reference oracles</span>
+            <strong id="hero-tests">—<span>matching</span></strong>
+            <p id="hero-status"></p>
+          </div>
+          <div class="score-grid">
+            <div><strong id="hero-warm">—</strong><span>warm twMerge ratio</span></div>
+            <div><strong id="hero-component">—</strong><span>component-call ratio</span></div>
+            <div><strong id="hero-brotli">—</strong><span>Brotli-11 ratio</span></div>
+            <div><strong>0</strong><span>runtime dependencies</span></div>
+          </div>
+          <p class="score-note">Ratios are LilScript / official: 1.00× is parity; lower is better. Regressions remain visible and are not relabelled as wins.</p>
+        </div>
+      </section>
+      <section class="ticker" aria-label="Implementation features"><div>typed arrays <span>✦</span> radix trie <span>✦</span> span validators <span>✦</span> integer conflict ids <span>✦</span> two-generation caches <span>✦</span> zero dependencies</div></section>
+
+      <section class="performance shell" id="performance">
+        <div class="section-heading">
+          <div><p class="eyebrow">The upstream harness</p><h2>Same work,<br />isolated runs.</h2></div>
+          <p>Each implementation × workload runs in its own Node process with its own warmup. Every row keeps the best of five measured blocks, exactly following upstream’s harness.</p>
+        </div>
+        <div class="perf-cards" id="perf-cards"></div>
+        <div class="table-wrap light"><table><thead><tr><th>Workload</th><th>LilScript</th><th>official cn</th><th>ratio</th></tr></thead><tbody id="perf-body"></tbody></table></div>
+        <p class="perf-note" id="perf-note"></p>
+      </section>
+
+      <section class="lab shell" id="lab">
+        <div class="section-heading">
+          <div><p class="eyebrow">Both compiled runtimes, in your browser</p><h2>Live<br />merge lab.</h2></div>
+          <p>Enter a class list. Both engines execute and the lab reports byte-for-byte agreement.</p>
+        </div>
+        <div class="playground">
+          <div class="play-toolbar"><button type="button" id="race">race 100k</button><span id="race-out"></span></div>
+          <div class="samples" id="samples"></div>
+          <div class="play-grid">
+            <textarea id="source" spellcheck="false" aria-label="Tailwind class list"></textarea>
+            <pre id="output"></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="evidence" id="evidence">
+        <div class="shell">
+          <div class="section-heading inverse">
+            <div><p class="eyebrow">The receipts</p><h2>Raw, gzip,<br />and Brotli.</h2></div>
+            <p>Matching browser ESM entry bundles, both minified by the same esbuild version. gzip uses level 9 and Brotli uses quality 11.</p>
+          </div>
+          <div class="codec-block"><h3>Bundle boundary</h3><p class="codec-lead" id="size-note"></p><div class="table-wrap"><table><thead><tr><th>Lane</th><th>Raw</th><th>gzip-9</th><th>Brotli-11</th><th>Brotli ratio</th></tr></thead><tbody id="size-body"></tbody></table></div></div>
+          <div class="method-note"><p><strong>What is ported.</strong> The default runtime, merge trie, validators, conflict pass, joining semantics, and caches are LilScript. Generated table data is deterministically decoded from the pinned upstream representation. Custom-config compiler and CLI are not claimed on this page.</p><a href="https://github.com/yeargun/cnlil">README ↗</a></div>
+        </div>
+      </section>
+      <section class="closing shell"><p class="eyebrow">Measure, then optimize</p><h2>Use the<br />typed runtime.</h2><div class="install-row large"><code>npm install github:yeargun/cnlil</code><button class="copy" data-copy="npm install github:yeargun/cnlil" type="button">copy</button></div></section>
+    </main>
+    <footer class="shell"><span>@itslil/cn · MIT</span><span>cn@0.2.4 runtime algorithms rewritten in LilScript — not affiliated with upstream</span><a href="https://github.com/yeargun/cnlil">source ↗</a></footer>
+  </body>
+</html>

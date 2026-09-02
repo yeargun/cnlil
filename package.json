@@ -1,0 +1,73 @@
+{
+  "name": "@itslil/cn",
+  "version": "0.2.4",
+  "description": "cn 0.2.4 runtime algorithms reimplemented in LilScript",
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "tailwind-merge",
+    "clsx",
+    "classnames",
+    "lilscript",
+    "itslil"
+  ],
+  "homepage": "https://yeargun.github.io/cnlil/",
+  "bugs": "https://github.com/yeargun/cnlil/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeargun/cnlil.git"
+  },
+  "license": "MIT",
+  "author": "yeargun",
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./lite": {
+      "types": "./dist/lite.d.ts",
+      "import": "./dist/lite.js",
+      "require": "./dist/lite.cjs",
+      "default": "./dist/lite.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/lite.js",
+    "dist/lite.cjs",
+    "dist/lite.d.ts",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md"
+  ],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "generate:tables": "node scripts/generate-tables.mjs",
+    "build": "node scripts/build.mjs --compile",
+    "test": "npm run build && node scripts/test-upstream.mjs",
+    "bench": "node scripts/bench.mjs",
+    "measure": "node scripts/measure.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "check:site": "npm run build:site && node --test test/site.test.mjs",
+    "prepublishOnly": "npm test && npm run check:site"
+  },
+  "devDependencies": {
+    "clsx": "2.1.1",
+    "cn": "0.2.4",
+    "esbuild": "0.25.12",
+    "tailwind-merge": "3.6.0",
+    "typescript": "5.9.2"
+  }
+}

@@ -1,0 +1,20 @@
+string joinLite(JsValue args) {
+  string output = "";
+  int index = 0;
+  int length = args.length.toInt();
+  while (index < length) {
+    JsValue value = args[index];
+    if (value.truthy() && value is string) {
+      if (output != "") output = output + " ";
+      output = output + value;
+    }
+    index = index + 1;
+  }
+  return output;
+}
+
+export JsValue clsx = JS.staticRest((JsValue args) => {
+  return joinLite(args);
+});
+
+export JsValue default = clsx;

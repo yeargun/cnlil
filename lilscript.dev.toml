@@ -1,0 +1,24 @@
+[package]
+name = "cnlil"
+version = "0.2.4"
+abi = 1
+entry = "src/index.lil"
+
+[javascript]
+priority = "performance-first"
+optimization_level = 8
+cost_model = "raw"
+public_aggregate_abi = "positional"
+assume_pristine_builtins = true
+strip_console = true
+candidate_search = "off"
+function_spelling = "function"
+
+[mangle]
+identifiers = true
+properties = false
+exports = false
+pool_strings = true
+
+[bundle]
+mode = "single"

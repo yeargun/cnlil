@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-09-02T19:17:49.848Z",
+  "boundary": "browser ESM bundle of the default entry, esbuild 0.25.12 minify, ES2022",
+  "upstreamCommit": "c003999e2456266c1b0e9d8ed4e2ca855d5eb38f",
+  "lil": {
+    "raw": 30641,
+    "gzip9": 11469,
+    "brotli11": 10066
+  },
+  "official": {
+    "raw": 27459,
+    "gzip9": 11018,
+    "brotli11": 9783
+  },
+  "ratio": {
+    "raw": 1.1158818602279763,
+    "gzip9": 1.040933018696678,
+    "brotli11": 1.0289277317796177
+  }
+}

@@ -1,0 +1,1385 @@
+import { Tables } from "./tables.lil";
+
+extern JsValue Error;
+
+int EXTERNAL = -1;
+int DEAD = -1;
+int ID_LIMIT = 2097152;
+
+int fnv(string text, int start, int end) {
+  int hash = -2128831035;
+  int position = start;
+  while (position < end) {
+    hash = (hash ^ text.charCodeAt(position)) * 16777619;
+    position = position + 1;
+  }
+  return hash;
+}
+
+int spanHash(string text, int start, int end) {
+  int length = end - start;
+  int hash = length * -1640531535 ^ text.charCodeAt(start);
+  if (length > 3) {
+    int quarter = length >>> 2;
+    int middle = length >>> 1;
+    hash = (hash ^ (text.charCodeAt(start + 1) << 8) ^ (text.charCodeAt(start + 2) << 16) ^ text.charCodeAt(start + quarter)) * -2048144789;
+    hash = (hash ^ (text.charCodeAt(start + middle) << 8) ^ (text.charCodeAt(start + middle + quarter) << 16) ^ text.charCodeAt(end - 3)) * -1028477387;
+    hash = hash ^ (text.charCodeAt(end - 2) << 8) ^ (text.charCodeAt(end - 1) << 16);
+    int left = start + 3;
+    int right = end - 4;
+    while (left < start + 8 && left < right) {
+      hash = (hash ^ text.charCodeAt(left) ^ (text.charCodeAt(right) << 8)) * 16777619;
+      left = left + 1;
+      right = right - 1;
+    }
+  }
+  return hash ^ (hash >>> 15);
+}
+
+void sortStrings(string[] values) {
+  int index = 1;
+  while (index < values.length) {
+    string value = values[index];
+    int position = index;
+    while (position > 0 && value < values[position - 1]) {
+      values[position] = values[position - 1];
+      position = position - 1;
+    }
+    values[position] = value;
+    index = index + 1;
+  }
+}
+
+void dropFirstArgumentEntry(ArgumentEntry[] values) {
+  int index = 1;
+  while (index < values.length) {
+    values[index - 1] = values[index];
+    index = index + 1;
+  }
+  values.pop();
+}
+
+class InternEntry {
+  string key;
+  int important;
+  int id;
+
+  init(string key, int important, int id) {
+    this.key = key;
+    this.important = important;
+    this.id = id;
+  }
+}
+
+export extern class ArgumentEntry {
+  string r;
+  int t;
+  string a0;
+  string a1;
+  string a2;
+  string[] a;
+  JsValue n;
+}
+
+ArgumentEntry makeArgumentEntry(string result, string[] values) {
+  string second = "";
+  if (values.length > 1) second = values[1];
+  string third = "";
+  if (values.length > 2) third = values[2];
+  return JS.assume(JS.object("r", result, "t", values.length, "a0", values[0], "a1", second, "a2", third, "a", values, "n", null));
+}
+
+export class MergeEngine {
+  Tables tables;
+  int groupCount;
+  Int32Array adjRow;
+  int claimPerToken;
+  Int32Array vgStart;
+  Uint8Array postfixLookupSet;
+  Uint8Array nodeHasLit;
+  int litMaxLen;
+  bool litNoArbitrary;
+  int litSize;
+  Int32Array litTable;
+  int cacheSize;
+  string fullPrefix;
+  int fullPrefixLength;
+
+  Regex lengthUnitRegex;
+  Regex colorFunctionRegex;
+  Regex shadowRegex;
+  Regex imageRegex;
+  Regex fractionRegex;
+  Regex tshirtRegex;
+  Regex unicodeWhitespaceRegex;
+
+  int arbitraryKind;
+  int arbitraryLabelStart;
+  int arbitraryLabelEnd;
+  int arbitraryValueStart;
+  int arbitraryValueEnd;
+  int[] validatorKinds;
+  string[][] validatorLabels;
+  int[] validatorFallbacks;
+  Set<string> orderSensitive;
+
+  Map<int, InternEntry[]> contextByHash;
+  Map<string, int> contextByCanonical;
+  int nextContextId;
+  Map<int, InternEntry[]> dynamicByHash;
+  int nextDynamicId;
+
+  int tokenTableSize;
+  Int32Array memoHash;
+  string[] memoString;
+  Int32Array memoGroup;
+  Int32Array memoContext;
+  Uint8Array memoFlags;
+  int memoTick;
+
+  int capacity;
+  Int32Array tokenStart;
+  Int32Array tokenEnd;
+  Int32Array tokenGroup;
+  Int32Array tokenContext;
+  Uint8Array tokenFlags;
+  Uint8Array keep;
+  int checkpointCapacity;
+  Int32Array checkpointNode;
+  Int32Array checkpointTail;
+
+  Int32Array claimZero;
+  int claimTableSize;
+  int claimShift;
+  Float64Array claimKeys;
+  Int32Array claimEpochs;
+  int epoch;
+
+  int doorSize;
+  Int32Array door;
+  int doorBase;
+  int doorEpoch;
+  Record<string> cache;
+  Record<string> previousCache;
+  int cacheCount;
+  int doorMarks;
+
+  init(Tables tables, int requestedCacheSize = 8192, string prefix = "") {
+    this.tables = tables;
+    this.groupCount = tables.groupCount;
+    this.adjRow = new Int32Array(this.groupCount);
+    this.adjRow.fill(-1);
+    int index = 0;
+    while (index < tables.adjGid.length) {
+      this.adjRow[tables.adjGid[index]] = index;
+      index = index + 1;
+    }
+    int maxAdjacency = 0;
+    index = 0;
+    while (index + 1 < tables.adjStart.length) {
+      int count = tables.adjStart[index + 1] - tables.adjStart[index];
+      if (count > maxAdjacency) maxAdjacency = count;
+      index = index + 1;
+    }
+    this.claimPerToken = 32;
+    while (this.claimPerToken < 2 * (1 + maxAdjacency + tables.patGid.length)) {
+      this.claimPerToken = this.claimPerToken << 1;
+    }
+    this.vgStart = new Int32Array(tables.vlistRef.length + 1);
+    index = 0;
+    while (index < tables.vlistRef.length) {
+      int pattern = tables.vlistRef[index];
+      this.vgStart[index + 1] = this.vgStart[index] + tables.vlistPat[pattern + 1] - tables.vlistPat[pattern];
+      index = index + 1;
+    }
+    this.postfixLookupSet = new Uint8Array(this.groupCount);
+    index = 0;
+    while (index < tables.postfixLookupGroups.length) {
+      this.postfixLookupSet[tables.postfixLookupGroups[index]] = 1;
+      index = index + 1;
+    }
+
+    int nodeCount = tables.edgeStart.length - 1;
+    this.nodeHasLit = new Uint8Array(nodeCount);
+    this.litMaxLen = 0;
+    this.litNoArbitrary = true;
+    index = 0;
+    while (index < tables.litAnchor.length) {
+      this.nodeHasLit[tables.litAnchor[index]] = 1;
+      int length = tables.poolOffsets[tables.litPool[index] * 2 + 1];
+      if (length > this.litMaxLen) this.litMaxLen = length;
+      int first = tables.poolText.charCodeAt(tables.poolOffsets[tables.litPool[index] * 2]);
+      if (first == 91 || first == 40) this.litNoArbitrary = false;
+      index = index + 1;
+    }
+    this.litSize = 1;
+    while (this.litSize < tables.litAnchor.length * 2) this.litSize = this.litSize << 1;
+    this.litTable = new Int32Array(this.litSize);
+    this.litTable.fill(-1);
+    index = 0;
+    while (index < tables.litAnchor.length) {
+      int offset = tables.poolOffsets[tables.litPool[index] * 2];
+      int hashIndex = (fnv(tables.poolText, offset, offset + tables.poolOffsets[tables.litPool[index] * 2 + 1]) ^ tables.litAnchor[index] * -1640531535) & (this.litSize - 1);
+      while (this.litTable[hashIndex] != -1) hashIndex = (hashIndex + 1) & (this.litSize - 1);
+      this.litTable[hashIndex] = index;
+      index = index + 1;
+    }
+    this.cacheSize = requestedCacheSize;
+    this.fullPrefix = prefix;
+    if (prefix == "") this.fullPrefix = tables.prefixValue;
+    if (this.fullPrefix != "") this.fullPrefix = this.fullPrefix + ":";
+    this.fullPrefixLength = this.fullPrefix.length;
+
+    this.lengthUnitRegex = new Regex("\\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\\b(calc|min|max|clamp)\\(.+\\)|^0$");
+    this.colorFunctionRegex = new Regex("^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix)\\(.+\\)$");
+    this.shadowRegex = new Regex("^(inset_)?-?((\\d+)?\\.?\\d+[a-z]+|0)_-?((\\d+)?\\.?\\d+[a-z]+|0)");
+    this.imageRegex = new Regex("^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\\(.+\\)$");
+    this.fractionRegex = new Regex("^\\d+(?:\\.\\d+)?/\\d+(?:\\.\\d+)?$");
+    this.tshirtRegex = new Regex("^(\\d+(\\.\\d+)?)?(xs|sm|md|lg|xl)$");
+    this.unicodeWhitespaceRegex = new Regex("\\s");
+    this.arbitraryKind = 0;
+    this.arbitraryLabelStart = -1;
+    this.arbitraryLabelEnd = -1;
+    this.arbitraryValueStart = -1;
+    this.arbitraryValueEnd = -1;
+    this.validatorKinds = [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2];
+    string labels = "length|number|number weight|family-name|position percentage|length size bg-size|image url|shadow|length|family-name|position percentage|length size bg-size|image url|shadow|number weight";
+    string[] labelRows = labels.split("|");
+    this.validatorLabels = [];
+    index = 0;
+    while (index < labelRows.length) {
+      this.validatorLabels.push(labelRows[index].split(" "));
+      index = index + 1;
+    }
+    this.validatorFallbacks = [2, 3, 1, 0, 0, 0, 4, 5, 0, 0, 0, 0, 0, 1, 1];
+    this.orderSensitive = new Set<string>();
+    string[] modifiers = tables.orderSensitiveModifiers.split(" ");
+    index = 0;
+    while (index < modifiers.length) {
+      this.orderSensitive.add(modifiers[index]);
+      index = index + 1;
+    }
+
+    this.contextByHash = new Map<int, InternEntry[]>();
+    this.contextByCanonical = new Map<string, int>();
+    this.nextContextId = 2;
+    this.dynamicByHash = new Map<int, InternEntry[]>();
+    this.nextDynamicId = this.groupCount;
+    this.tokenTableSize = 8192;
+    this.memoHash = new Int32Array(this.tokenTableSize);
+    this.memoString = [];
+    index = 0;
+    while (index < this.tokenTableSize) {
+      this.memoString.push("");
+      index = index + 1;
+    }
+    this.memoGroup = new Int32Array(this.tokenTableSize);
+    this.memoContext = new Int32Array(this.tokenTableSize);
+    this.memoFlags = new Uint8Array(this.tokenTableSize);
+    this.memoTick = 0;
+
+    this.capacity = 256;
+    this.tokenStart = new Int32Array(this.capacity);
+    this.tokenEnd = new Int32Array(this.capacity);
+    this.tokenGroup = new Int32Array(this.capacity);
+    this.tokenContext = new Int32Array(this.capacity);
+    this.tokenFlags = new Uint8Array(this.capacity);
+    this.keep = new Uint8Array(this.capacity);
+    this.checkpointCapacity = 64;
+    this.checkpointNode = new Int32Array(this.checkpointCapacity);
+    this.checkpointTail = new Int32Array(this.checkpointCapacity);
+    this.claimZero = new Int32Array(this.groupCount);
+    this.claimTableSize = 2048;
+    this.claimShift = 21;
+    this.claimKeys = new Float64Array(this.claimTableSize);
+    this.claimEpochs = new Int32Array(this.claimTableSize);
+    this.epoch = 0;
+
+    this.doorSize = 16384;
+    this.door = new Int32Array(this.doorSize * 2);
+    this.doorBase = 0;
+    this.doorEpoch = 1;
+    this.cache = record{};
+    this.previousCache = record{};
+    this.cacheCount = 0;
+    this.doorMarks = 0;
+  }
+
+  bool isUnicodeWhitespace(string input, int index) {
+    return this.unicodeWhitespaceRegex.test(input.charAt(index));
+  }
+
+  bool isWordCode(int code) {
+    return (code >= 97 && code <= 122) || (code >= 65 && code <= 90) || (code >= 48 && code <= 57) || code == 95;
+  }
+
+  bool spanEquals(string input, int start, int end, string expected) {
+    if (end - start != expected.length) return false;
+    int index = 0;
+    while (index < expected.length) {
+      if (input.charCodeAt(start + index) != expected.charCodeAt(index)) return false;
+      index = index + 1;
+    }
+    return true;
+  }
+
+  void analyzeArbitrary(string input, int start, int end) {
+    this.arbitraryKind = 0;
+    this.arbitraryLabelStart = -1;
+    if (end - start < 3) return;
+    int first = input.charCodeAt(start);
+    int last = input.charCodeAt(end - 1);
+    if (first == 91 && last == 93) this.arbitraryKind = 1;
+    else if (first == 40 && last == 41) this.arbitraryKind = 2;
+    else return;
+    this.arbitraryValueStart = start + 1;
+    this.arbitraryValueEnd = end - 1;
+    int position = start + 1;
+    if (this.isWordCode(input.charCodeAt(position))) {
+      position = position + 1;
+      while (position < end - 1) {
+        int code = input.charCodeAt(position);
+        if (!this.isWordCode(code) && code != 45) break;
+        position = position + 1;
+      }
+      if (position < end - 2 && input.charCodeAt(position) == 58) {
+        this.arbitraryLabelStart = start + 1;
+        this.arbitraryLabelEnd = position;
+        this.arbitraryValueStart = position + 1;
+      }
+    }
+  }
+
+  bool numericString(string value) {
+    if (value == "") return false;
+    number parsed = JS.number(value);
+    return parsed == parsed;
+  }
+
+  bool namedContainerQuery(string input, int start, int end) {
+    if (end - start < 11 || !this.spanEquals(input, start, start + 10, "@container")) return false;
+    if (input.charCodeAt(start + 10) == 47) return end - start >= 12;
+    int next = input.charCodeAt(start + 11);
+    return (next == 115 && end - start >= 17 && this.spanEquals(input, start + 10, start + 16, "-size/")) ||
+      (next == 110 && end - start >= 19 && this.spanEquals(input, start + 10, start + 18, "-normal/"));
+  }
+
+  bool runValidator(int operation, string input, int start, int end) {
+    if (operation >= 10) {
+      if (operation >= 25) throw JS.construct(Error, "cn: missing custom validator");
+      int index = operation - 10;
+      if (this.arbitraryKind != this.validatorKinds[index]) return false;
+      if (this.arbitraryLabelStart >= 0) {
+        string[] labels = this.validatorLabels[index];
+        int label = 0;
+        while (label < labels.length) {
+          if (this.spanEquals(input, this.arbitraryLabelStart, this.arbitraryLabelEnd, labels[label])) return true;
+          label = label + 1;
+        }
+        return false;
+      }
+      int fallback = this.validatorFallbacks[index];
+      if (fallback == 0) return false;
+      if (fallback == 1) return true;
+      string value = input.slice(this.arbitraryValueStart, this.arbitraryValueEnd);
+      if (fallback == 2) return this.lengthUnitRegex.test(value) && !this.colorFunctionRegex.test(value);
+      if (fallback == 3) return this.numericString(value);
+      if (fallback == 4) return this.imageRegex.test(value);
+      return this.shadowRegex.test(value);
+    }
+    if (operation == 0) return true;
+    if (operation == 1) return this.arbitraryKind == 0;
+    if (operation == 2) return this.arbitraryKind == 1;
+    if (operation == 3) return this.arbitraryKind == 2;
+    if (operation == 4) return this.fractionRegex.test(input.slice(start, end));
+    if (operation == 5) return this.numericString(input.slice(start, end));
+    if (operation == 6) {
+      string value = input.slice(start, end);
+      if (!this.numericString(value)) return false;
+      number parsed = JS.number(value);
+      return parsed.floor() == parsed;
+    }
+    if (operation == 7) return end > start && input.charCodeAt(end - 1) == 37 && this.numericString(input.slice(start, end - 1));
+    if (operation == 8) return this.tshirtRegex.test(input.slice(start, end));
+    return this.namedContainerQuery(input, start, end);
+  }
+
+  int literalProbe(int anchor, string input, int start, int end) {
+    Tables tables = this.tables;
+    int index = (fnv(input, start, end) ^ anchor * -1640531535) & (this.litSize - 1);
+    int length = end - start;
+    while (true) {
+      int entry = this.litTable[index];
+      if (entry == -1) return -1;
+      if (tables.litAnchor[entry] == anchor && tables.poolOffsets[tables.litPool[entry] * 2 + 1] == length) {
+        int offset = tables.poolOffsets[tables.litPool[entry] * 2];
+        bool matches = true;
+        int charIndex = 0;
+        while (charIndex < length) {
+          if (tables.poolText.charCodeAt(offset + charIndex) != input.charCodeAt(start + charIndex)) {
+            matches = false;
+            break;
+          }
+          charIndex = charIndex + 1;
+        }
+        if (matches) return tables.litGroup[entry];
+      }
+      index = (index + 1) & (this.litSize - 1);
+    }
+    return -1;
+  }
+
+  int internSpan(Map<int, InternEntry[]> map, string input, int start, int end, int important, bool context) {
+    int importantHash = 0;
+    if (important != 0) importantHash = -1640531527;
+    int hash = fnv(input, start, end) ^ importantHash;
+    InternEntry[]? maybeBucket = map.get(hash);
+    InternEntry[] bucket = [];
+    if (maybeBucket != null) {
+      bucket = maybeBucket;
+      int bucketIndex = 0;
+      while (bucketIndex < bucket.length) {
+        InternEntry entry = bucket[bucketIndex];
+        if (entry.important == important && entry.key.length == end - start) {
+          bool matches = true;
+          int charIndex = 0;
+          while (charIndex < entry.key.length) {
+            if (entry.key.charCodeAt(charIndex) != input.charCodeAt(start + charIndex)) {
+              matches = false;
+              break;
+            }
+            charIndex = charIndex + 1;
+          }
+          if (matches) return entry.id;
+        }
+        bucketIndex = bucketIndex + 1;
+      }
+    } else {
+      map.set(hash, bucket);
+    }
+    string key = input.slice(start, end);
+    int id = 0;
+    if (context) id = this.canonicalizeContext(key, important != 0);
+    else {
+      id = this.nextDynamicId;
+      this.nextDynamicId = this.nextDynamicId + 1;
+    }
+    bucket.push(new InternEntry(key, important, id));
+    return id;
+  }
+
+  int canonicalizeContext(string raw, bool important) {
+    string[] modifiers = [];
+    int bracketDepth = 0;
+    int parenthesisDepth = 0;
+    int start = 0;
+    int index = 0;
+    while (index < raw.length) {
+      int code = raw.charCodeAt(index);
+      if (bracketDepth == 0 && parenthesisDepth == 0 && code == 58) {
+        modifiers.push(raw.slice(start, index));
+        start = index + 1;
+      } else if (code == 91) bracketDepth = bracketDepth + 1;
+      else if (code == 93) bracketDepth = bracketDepth - 1;
+      else if (code == 40) parenthesisDepth = parenthesisDepth + 1;
+      else if (code == 41) parenthesisDepth = parenthesisDepth - 1;
+      index = index + 1;
+    }
+    modifiers.push(raw.slice(start));
+    string canonical = modifiers[0];
+    if (modifiers.length > 1) {
+      string[] result = [];
+      string[] segment = [];
+      index = 0;
+      while (index < modifiers.length) {
+        string modifier = modifiers[index];
+        if (modifier.charCodeAt(0) == 91 || this.orderSensitive.has(modifier)) {
+          if (segment.length > 0) {
+            sortStrings(segment);
+            int segmentIndex = 0;
+            while (segmentIndex < segment.length) {
+              result.push(segment[segmentIndex]);
+              segmentIndex = segmentIndex + 1;
+            }
+            segment = [];
+          }
+          result.push(modifier);
+        } else segment.push(modifier);
+        index = index + 1;
+      }
+      if (segment.length > 0) {
+        sortStrings(segment);
+        index = 0;
+        while (index < segment.length) {
+          result.push(segment[index]);
+          index = index + 1;
+        }
+      }
+      canonical = result.join(":");
+    }
+    string key = canonical;
+    if (important) key = canonical + " !";
+    int? existing = this.contextByCanonical.get(key);
+    if (existing != null) return existing;
+    int id = this.nextContextId;
+    this.nextContextId = this.nextContextId + 1;
+    this.contextByCanonical.set(key, id);
+    return id;
+  }
+
+  void resetMemo() {
+    int index = 0;
+    while (index < this.memoString.length) {
+      this.memoString[index] = "";
+      index = index + 1;
+    }
+  }
+
+  void memoPut(int wayZero, string input, int start, int end, int hash, int group, int context, int flags) {
+    int slot = wayZero;
+    if (this.memoString[wayZero] != "") {
+      if (this.memoString[wayZero | 1] == "") slot = wayZero | 1;
+      else {
+        int tick = this.memoTick;
+        this.memoTick = this.memoTick + 1;
+        if ((tick & 3) == 0) slot = wayZero | ((this.memoTick >>> 2) & 1);
+        else return;
+      }
+    }
+    this.memoString[slot] = input.slice(start, end);
+    this.memoHash[slot] = hash;
+    this.memoGroup[slot] = group;
+    this.memoContext[slot] = context;
+    this.memoFlags[slot] = flags;
+  }
+
+  void growTokens() {
+    this.capacity = this.capacity * 2;
+    Int32Array nextStart = new Int32Array(this.capacity);
+    nextStart.set(this.tokenStart);
+    this.tokenStart = nextStart;
+    Int32Array nextEnd = new Int32Array(this.capacity);
+    nextEnd.set(this.tokenEnd);
+    this.tokenEnd = nextEnd;
+    Int32Array nextGroup = new Int32Array(this.capacity);
+    nextGroup.set(this.tokenGroup);
+    this.tokenGroup = nextGroup;
+    Int32Array nextContext = new Int32Array(this.capacity);
+    nextContext.set(this.tokenContext);
+    this.tokenContext = nextContext;
+    Uint8Array nextFlags = new Uint8Array(this.capacity);
+    nextFlags.set(this.tokenFlags);
+    this.tokenFlags = nextFlags;
+    this.keep = new Uint8Array(this.capacity);
+  }
+
+  void growCheckpoints() {
+    this.checkpointCapacity = this.checkpointCapacity * 2;
+    Int32Array nextNode = new Int32Array(this.checkpointCapacity);
+    nextNode.set(this.checkpointNode);
+    this.checkpointNode = nextNode;
+    Int32Array nextTail = new Int32Array(this.checkpointCapacity);
+    nextTail.set(this.checkpointTail);
+    this.checkpointTail = nextTail;
+  }
+
+  int resolveAt(string input, int baseStart, int endPosition, int nodeAt, int checkpointAt) {
+    Tables tables = this.tables;
+    if (endPosition - baseStart >= 2 && input.charCodeAt(baseStart) == 91 && input.charCodeAt(endPosition - 1) == 93) {
+      int colon = -1;
+      int position = baseStart + 1;
+      while (position < endPosition - 1) {
+        if (input.charCodeAt(position) == 58) {
+          colon = position;
+          break;
+        }
+        position = position + 1;
+      }
+      if (colon == -1 || colon == baseStart + 1) return EXTERNAL;
+      return this.internSpan(this.dynamicByHash, input, baseStart + 1, colon, 0, false);
+    }
+    if (nodeAt >= 0 && tables.nodeGroup[nodeAt] >= 0) return tables.nodeGroup[nodeAt];
+    int checkpoint = checkpointAt - 1;
+    while (checkpoint >= 0) {
+      int tailStart = this.checkpointTail[checkpoint];
+      if (tailStart <= endPosition) {
+        int nodeId = this.checkpointNode[checkpoint];
+        int tailLength = endPosition - tailStart;
+        if (this.nodeHasLit[nodeId] == 1 && tailLength > 0 && tailLength <= this.litMaxLen) {
+          int first = input.charCodeAt(tailStart);
+          if (!this.litNoArbitrary || (first != 91 && first != 40)) {
+            int literalGroup = this.literalProbe(nodeId, input, tailStart, endPosition);
+            if (literalGroup >= 0) return literalGroup;
+          }
+        }
+        int validatorList = tables.nodeVlist[nodeId];
+        if (validatorList >= 0) {
+          int pattern = tables.vlistRef[validatorList];
+          int validatorStart = tables.vlistPat[pattern];
+          int validatorEnd = tables.vlistPat[pattern + 1];
+          if (validatorStart != validatorEnd) {
+            this.analyzeArbitrary(input, tailStart, endPosition);
+            int groupOffset = this.vgStart[validatorList] - validatorStart;
+            int validator = validatorStart;
+            while (validator < validatorEnd) {
+              if (this.runValidator(tables.vlistOps[validator], input, tailStart, endPosition)) return tables.vlistGroup[groupOffset + validator];
+              validator = validator + 1;
+            }
+          }
+        }
+      }
+      checkpoint = checkpoint - 1;
+    }
+    return EXTERNAL;
+  }
+
+  int claimTest(int context, int group) {
+    if (context == 0 && group < this.groupCount) {
+      if (this.claimZero[group] == this.epoch) return 1;
+      this.claimZero[group] = this.epoch;
+      return 0;
+    }
+    number key = context * 2097152.0 + group + 1;
+    int index = key.toInt() * -1640531535 >>> this.claimShift;
+    while (true) {
+      if (this.claimEpochs[index] != this.epoch) break;
+      if (this.claimKeys[index] == key) return 1;
+      index = (index + 1) & (this.claimTableSize - 1);
+    }
+    this.claimKeys[index] = key;
+    this.claimEpochs[index] = this.epoch;
+    return 0;
+  }
+
+  string mergeUncached(string input) {
+    Tables tables = this.tables;
+    int inputLength = input.length;
+    int tokenCount = 0;
+    int totalTokenChars = 0;
+    bool sawNonSpaceWhitespace = false;
+    if (this.nextContextId > 4096 || this.contextByHash.size > 4096) {
+      this.contextByHash = new Map<int, InternEntry[]>();
+      this.contextByCanonical = new Map<string, int>();
+      this.nextContextId = 2;
+      this.resetMemo();
+    }
+    if (this.nextDynamicId > this.groupCount + 4096) {
+      this.dynamicByHash = new Map<int, InternEntry[]>();
+      this.nextDynamicId = this.groupCount;
+      this.resetMemo();
+    }
+
+    int inputIndex = 0;
+    while (inputIndex < inputLength) {
+      int code = input.charCodeAt(inputIndex);
+      if (code == 32 || (code >= 9 && code <= 13) || (code >= 160 && this.isUnicodeWhitespace(input, inputIndex))) {
+        if (code != 32) sawNonSpaceWhitespace = true;
+        inputIndex = inputIndex + 1;
+        continue;
+      }
+      int tokenStart = inputIndex;
+      int tokenHash = 0;
+      while (inputIndex < inputLength) {
+        code = input.charCodeAt(inputIndex);
+        if (code <= 32) {
+          if (code == 32) break;
+          if (code >= 9 && code <= 13) {
+            sawNonSpaceWhitespace = true;
+            break;
+          }
+        } else if (code >= 160 && this.isUnicodeWhitespace(input, inputIndex)) {
+          sawNonSpaceWhitespace = true;
+          break;
+        }
+        tokenHash = (tokenHash ^ code) * 16777619;
+        inputIndex = inputIndex + 1;
+      }
+      int tokenEnd = inputIndex;
+      int tokenLength = tokenEnd - tokenStart;
+      if (tokenCount == this.capacity) this.growTokens();
+      int token = tokenCount;
+      tokenCount = tokenCount + 1;
+      this.tokenStart[token] = tokenStart;
+      this.tokenEnd[token] = tokenEnd;
+      totalTokenChars = totalTokenChars + tokenLength;
+      tokenHash = tokenHash ^ tokenLength * -1640531535;
+      int hash = tokenHash ^ (tokenHash >>> 15);
+      int wayZero = hash & (this.tokenTableSize - 1) & -2;
+      int hitAt = -1;
+      if (this.memoHash[wayZero] == hash && this.memoString[wayZero] != "" && this.memoString[wayZero].length == tokenLength) hitAt = wayZero;
+      else if (this.memoHash[wayZero | 1] == hash && this.memoString[wayZero | 1] != "" && this.memoString[wayZero | 1].length == tokenLength) hitAt = wayZero | 1;
+      if (hitAt >= 0) {
+        string memo = this.memoString[hitAt];
+        bool matches = true;
+        int charIndex = 0;
+        while (charIndex < tokenLength) {
+          if (memo.charCodeAt(charIndex) != input.charCodeAt(tokenStart + charIndex)) {
+            matches = false;
+            break;
+          }
+          charIndex = charIndex + 1;
+        }
+        if (matches) {
+          this.tokenGroup[token] = this.memoGroup[hitAt];
+          this.tokenContext[token] = this.memoContext[hitAt];
+          this.tokenFlags[token] = this.memoFlags[hitAt];
+          continue;
+        }
+      }
+
+      int prefixedTokenStart = tokenStart;
+      if (this.fullPrefixLength != 0) {
+        if (tokenEnd - tokenStart <= this.fullPrefixLength || !this.spanEquals(input, tokenStart, tokenStart + this.fullPrefixLength, this.fullPrefix)) {
+          this.tokenGroup[token] = EXTERNAL;
+          this.memoPut(wayZero, input, tokenStart, tokenEnd, hash, EXTERNAL, 0, 0);
+          continue;
+        }
+        prefixedTokenStart = tokenStart + this.fullPrefixLength;
+      }
+      int bracketDepth = 0;
+      int parenthesisDepth = 0;
+      int lastColon = -1;
+      int lastSlash = -1;
+      int position = prefixedTokenStart;
+      while (position < tokenEnd) {
+        int current = input.charCodeAt(position);
+        if (bracketDepth == 0 && parenthesisDepth == 0) {
+          if (current == 58) {
+            lastColon = position;
+            position = position + 1;
+            continue;
+          }
+          if (current == 47) {
+            lastSlash = position;
+            position = position + 1;
+            continue;
+          }
+        }
+        if (current == 91) bracketDepth = bracketDepth + 1;
+        else if (current == 93) bracketDepth = bracketDepth - 1;
+        else if (current == 40) parenthesisDepth = parenthesisDepth + 1;
+        else if (current == 41) parenthesisDepth = parenthesisDepth - 1;
+        position = position + 1;
+      }
+      int modifierStart = prefixedTokenStart;
+      if (lastColon >= prefixedTokenStart) modifierStart = lastColon + 1;
+      int baseStart = modifierStart;
+      int baseEnd = tokenEnd;
+      bool important = false;
+      int prefixShift = 0;
+      if (baseEnd > baseStart && input.charCodeAt(baseEnd - 1) == 33) {
+        important = true;
+        baseEnd = baseEnd - 1;
+      } else if (baseEnd > baseStart && input.charCodeAt(baseStart) == 33) {
+        important = true;
+        baseStart = baseStart + 1;
+        prefixShift = 1;
+      }
+      int postfixEnd = -1;
+      if (lastSlash > modifierStart) {
+        postfixEnd = lastSlash + prefixShift;
+        if (postfixEnd >= baseEnd) postfixEnd = -1;
+      }
+      int feedStart = baseStart;
+      if (baseEnd - baseStart > 1 && input.charCodeAt(baseStart) == 45) feedStart = baseStart + 1;
+      int node = 0;
+      int labelPosition = 0;
+      int labelEnd = 0;
+      int pending = -1;
+      int checkpointTop = 0;
+      if (tables.nodeVlist[0] >= 0 || this.nodeHasLit[0] == 1) {
+        this.checkpointNode[0] = 0;
+        this.checkpointTail[0] = feedStart;
+        checkpointTop = 1;
+      }
+      int slashNode = DEAD;
+      int slashCheckpoint = 0;
+      position = feedStart;
+      while (position < baseEnd) {
+        if (position == postfixEnd) {
+          slashNode = node;
+          if (labelPosition < labelEnd) slashNode = DEAD;
+          slashCheckpoint = checkpointTop;
+        }
+        if (node != DEAD) {
+          int current = input.charCodeAt(position);
+          int arrived = -1;
+          if (labelPosition < labelEnd) {
+            if (tables.labelText.charCodeAt(labelPosition) == current) {
+              labelPosition = labelPosition + 1;
+              if (labelPosition == labelEnd) {
+                node = pending;
+                arrived = node;
+              }
+            } else node = DEAD;
+          } else {
+            int edgeStart = tables.edgeStart[node];
+            int edgeEnd = tables.edgeStart[node + 1];
+            int next = DEAD;
+            int edge = edgeStart;
+            while (edge < edgeEnd) {
+              int labelStart = tables.labelStart[edge];
+              if (tables.labelText.charCodeAt(labelStart) == current) {
+                if (tables.labelStart[edge + 1] - labelStart == 1) {
+                  next = tables.edgeTarget[edge];
+                  arrived = next;
+                } else {
+                  labelPosition = labelStart + 1;
+                  labelEnd = tables.labelStart[edge + 1];
+                  pending = tables.edgeTarget[edge];
+                  next = node;
+                }
+                break;
+              }
+              edge = edge + 1;
+            }
+            node = next;
+          }
+          if (arrived >= 0 && (tables.nodeVlist[arrived] >= 0 || this.nodeHasLit[arrived] == 1) && position + 1 < baseEnd && input.charCodeAt(position + 1) == 45) {
+            if (checkpointTop == this.checkpointCapacity) this.growCheckpoints();
+            this.checkpointNode[checkpointTop] = arrived;
+            this.checkpointTail[checkpointTop] = position + 2;
+            checkpointTop = checkpointTop + 1;
+          }
+        }
+        position = position + 1;
+      }
+      if (postfixEnd == baseEnd) {
+        slashNode = node;
+        if (labelPosition < labelEnd) slashNode = DEAD;
+        slashCheckpoint = checkpointTop;
+      }
+      int endNode = node;
+      if (labelPosition < labelEnd) endNode = DEAD;
+      int group = EXTERNAL;
+      bool hasPostfix = false;
+      if (postfixEnd >= 0) {
+        hasPostfix = true;
+        group = this.resolveAt(input, baseStart, postfixEnd, slashNode, slashCheckpoint);
+        if (group != EXTERNAL && group < this.groupCount && this.postfixLookupSet[group] != 0) {
+          int fullGroup = this.resolveAt(input, baseStart, baseEnd, endNode, checkpointTop);
+          if (fullGroup != EXTERNAL && fullGroup != group) {
+            group = fullGroup;
+            hasPostfix = false;
+          }
+        } else if (group == EXTERNAL) {
+          group = this.resolveAt(input, baseStart, baseEnd, endNode, checkpointTop);
+          hasPostfix = false;
+        }
+      } else group = this.resolveAt(input, baseStart, baseEnd, endNode, checkpointTop);
+      int context = 0;
+      int flags = 0;
+      if (group == EXTERNAL) this.tokenGroup[token] = EXTERNAL;
+      else {
+        if (hasPostfix) flags = 1;
+        int importantInt = 0;
+        if (important) importantInt = 1;
+        if (prefixedTokenStart >= lastColon) context = importantInt;
+        else context = this.internSpan(this.contextByHash, input, prefixedTokenStart, lastColon, importantInt, true);
+        this.tokenGroup[token] = group;
+        this.tokenFlags[token] = flags;
+        this.tokenContext[token] = context;
+      }
+      this.memoPut(wayZero, input, tokenStart, tokenEnd, hash, group, context, flags);
+    }
+
+    if (tokenCount == 0) return "";
+    if (tokenCount == 1) {
+      if (this.tokenStart[0] == 0 && this.tokenEnd[0] == inputLength) return input;
+      return input.slice(this.tokenStart[0], this.tokenEnd[0]);
+    }
+    if (tokenCount * this.claimPerToken > this.claimTableSize) {
+      while (tokenCount * this.claimPerToken > this.claimTableSize) {
+        this.claimTableSize = this.claimTableSize << 1;
+        this.claimShift = this.claimShift - 1;
+      }
+      this.claimKeys = new Float64Array(this.claimTableSize);
+      this.claimEpochs = new Int32Array(this.claimTableSize);
+    }
+    if (this.nextContextId >= ID_LIMIT || this.nextDynamicId >= ID_LIMIT) throw JS.construct(Error, "cn: too many distinct classes in one merge");
+    this.epoch = this.epoch + 1;
+    if (this.epoch == 0) {
+      this.claimZero.fill(0);
+      this.claimEpochs.fill(0);
+      this.epoch = 1;
+    }
+    bool didDrop = false;
+    int token = tokenCount - 1;
+    while (token >= 0) {
+      int group = this.tokenGroup[token];
+      if (group == EXTERNAL) this.keep[token] = 1;
+      else {
+        int context = this.tokenContext[token];
+        if (this.claimTest(context, group) == 1) {
+          this.keep[token] = 0;
+          didDrop = true;
+        } else {
+          this.keep[token] = 1;
+          if (group < this.groupCount) {
+            int row = this.adjRow[group];
+            if (row >= 0) {
+              int target = tables.adjStart[row];
+              while (target < tables.adjStart[row + 1]) {
+                this.claimTest(context, tables.adjTgt[target]);
+                target = target + 1;
+              }
+            }
+            if ((this.tokenFlags[token] & 1) != 0) {
+              int pair = 0;
+              while (pair < tables.patGid.length) {
+                if (tables.patGid[pair] == group) this.claimTest(context, tables.patTgt[pair]);
+                pair = pair + 1;
+              }
+            }
+          }
+        }
+      }
+      token = token - 1;
+    }
+    if (!didDrop && !sawNonSpaceWhitespace && inputLength == totalTokenChars + tokenCount - 1) return input;
+    string output = "";
+    token = 0;
+    while (token < tokenCount) {
+      if (this.keep[token] == 0) {
+        token = token + 1;
+        continue;
+      }
+      int runStart = this.tokenStart[token];
+      int runEnd = this.tokenEnd[token];
+      int following = token + 1;
+      while (following < tokenCount && this.keep[following] != 0 && this.tokenStart[following] == runEnd + 1 && input.charCodeAt(runEnd) == 32) {
+        runEnd = this.tokenEnd[following];
+        following = following + 1;
+      }
+      if (output.length > 0) output = output + " ";
+      output = output + input.slice(runStart, runEnd);
+      token = following;
+    }
+    return output;
+  }
+
+  void rotateDoor() {
+    this.doorBase = this.doorBase ^ this.doorSize;
+    this.doorEpoch = this.doorEpoch + 1;
+    this.doorMarks = 0;
+  }
+
+  bool seenBefore(string input) {
+    int hash = spanHash(input, 0, input.length);
+    int slot = (hash & (this.doorSize - 1)) + this.doorBase;
+    if (this.door[slot] == (hash ^ this.doorEpoch) || this.door[slot ^ this.doorSize] == (hash ^ (this.doorEpoch - 1))) return true;
+    this.door[slot] = hash ^ this.doorEpoch;
+    this.doorMarks = this.doorMarks + 1;
+    if (this.doorMarks > this.doorSize) this.rotateDoor();
+    return false;
+  }
+
+  string mergeString(string input) {
+    if (this.cacheSize == 0) return this.mergeUncached(input);
+    string? cached = this.cache[input];
+    if (cached != null) return cached;
+    return this.mergeStringMiss(input);
+  }
+
+  string mergeStringMiss(string input) {
+    int hash = spanHash(input, 0, input.length);
+    int slot = (hash & (this.doorSize - 1)) + this.doorBase;
+    bool wasSeen = this.door[slot] == (hash ^ this.doorEpoch) || this.door[slot ^ this.doorSize] == (hash ^ (this.doorEpoch - 1));
+    if (wasSeen) {
+      string? previous = this.previousCache[input];
+      if (previous != null) {
+        this.cache[input] = previous;
+        return previous;
+      }
+    }
+    string merged = this.mergeUncached(input);
+    if (wasSeen) {
+      this.cache[input] = merged;
+      this.cacheCount = this.cacheCount + 1;
+      if (this.cacheCount > this.cacheSize) {
+        this.cacheCount = 0;
+        this.previousCache = this.cache;
+        this.cache = record{};
+        this.rotateDoor();
+      }
+    } else {
+      this.door[slot] = hash ^ this.doorEpoch;
+      this.doorMarks = this.doorMarks + 1;
+      if (this.doorMarks > this.doorSize) this.rotateDoor();
+    }
+    return merged;
+  }
+}
+
+export class CnCache {
+  MergeEngine engine;
+  Map<string, ArgumentEntry[]> argumentCache;
+  Map<string, ArgumentEntry[]> previousArgumentCache;
+  int argumentCount;
+  ArgumentEntry? lastHit;
+
+  init(MergeEngine engine) {
+    this.engine = engine;
+    this.argumentCache = new Map<string, ArgumentEntry[]>();
+    this.previousArgumentCache = new Map<string, ArgumentEntry[]>();
+    this.argumentCount = 0;
+    this.lastHit = null;
+  }
+
+  bool matchThree(ArgumentEntry entry, JsValue valueZero, JsValue valueOne, JsValue valueTwo) {
+    float index = 0.0;
+    if (valueZero.truthy()) {
+      if (!JS.strictEqual(valueZero, entry.a0)) return false;
+      index = 1.0;
+    }
+    if (valueOne.truthy()) {
+      string expected = entry.a1;
+      if (index == 0.0) expected = entry.a0;
+      if (!JS.strictEqual(valueOne, expected)) return false;
+      index = index + 1;
+    }
+    if (valueTwo.truthy()) {
+      string expected = entry.a0;
+      if (index == 1.0) expected = entry.a1;
+      else if (index == 2.0) expected = entry.a2;
+      if (!JS.strictEqual(valueTwo, expected)) return false;
+      index = index + 1;
+    }
+    return index == entry.t;
+  }
+
+  bool matchArguments(ArgumentEntry entry, JsValue args) {
+    int entryIndex = 0;
+    int index = 0;
+    int length = args.length.toInt();
+    while (index < length) {
+      JsValue value = args[index];
+      if (value.truthy()) {
+        if (!JS.strictEqual(value, entry.a[entryIndex])) return false;
+        entryIndex = entryIndex + 1;
+      }
+      index = index + 1;
+    }
+    return entryIndex == entry.t;
+  }
+
+  string resolveArguments(JsValue args, bool alreadyProbed) {
+    int argumentLength = args.length.toInt();
+    ArgumentEntry? prior = this.lastHit;
+    ArgumentEntry? prediction = null;
+    if (prior != null) {
+      JsValue predictedValue = prior.n;
+      if (predictedValue.truthy()) prediction = JS.assume(predictedValue);
+    }
+    if (!alreadyProbed) {
+      if (prediction != null && this.matchArguments(prediction, args)) {
+        this.lastHit = prediction;
+        return prediction.r;
+      }
+      if (prior != null && prior != prediction && this.matchArguments(prior, args)) return prior.r;
+    }
+    string first = "";
+    int firstIndex = -1;
+    int truthy = 0;
+    bool resolvedAValue = false;
+    int index = 0;
+    while (index < argumentLength) {
+      JsValue value = args[index];
+      if (value.truthy()) {
+        if (!(value is string)) {
+          string resolved = resolveValue(value, true);
+          args[index] = resolved;
+          if (resolved == "") {
+            index = index + 1;
+            continue;
+          }
+          value = resolved;
+          resolvedAValue = true;
+        }
+        if (firstIndex < 0) {
+          first = JS.string(value);
+          firstIndex = index;
+        }
+        truthy = truthy + 1;
+      }
+      index = index + 1;
+    }
+    if (truthy == 0) return "";
+    if (truthy == 1) return this.engine.mergeString(first);
+    if (resolvedAValue) {
+      if (prediction != null && this.matchArguments(prediction, args)) {
+        this.lastHit = prediction;
+        return prediction.r;
+      }
+      if (prior != null && prior != prediction && this.matchArguments(prior, args)) return prior.r;
+    }
+    ArgumentEntry[]? maybeBucket = this.argumentCache.get(first);
+    if (maybeBucket == null) {
+      maybeBucket = this.previousArgumentCache.get(first);
+      if (maybeBucket != null) this.argumentCache.set(first, maybeBucket);
+    }
+    ArgumentEntry[] bucket = [];
+    if (maybeBucket != null) bucket = maybeBucket;
+    ArgumentEntry? hit = null;
+    int bucketIndex = 0;
+    while (bucketIndex < bucket.length) {
+      ArgumentEntry candidate = bucket[bucketIndex];
+      if (candidate.t == truthy) {
+        int valueIndex = 1;
+        bool matches = true;
+        index = firstIndex + 1;
+        while (index < argumentLength) {
+          JsValue value = args[index];
+          if (value.truthy()) {
+            if (!JS.strictEqual(value, candidate.a[valueIndex])) {
+              matches = false;
+              break;
+            }
+            valueIndex = valueIndex + 1;
+          }
+          index = index + 1;
+        }
+        if (matches) {
+          hit = candidate;
+          break;
+        }
+      }
+      bucketIndex = bucketIndex + 1;
+    }
+    if (hit == null) {
+      string joined = first;
+      string[] values = [first];
+      index = firstIndex + 1;
+      while (index < argumentLength) {
+        JsValue value = args[index];
+        if (value.truthy()) {
+          string text = JS.string(value);
+          joined = joined + " " + text;
+          values.push(text);
+        }
+        index = index + 1;
+      }
+      if (!this.engine.seenBefore(joined)) return this.engine.mergeUncached(joined);
+      ArgumentEntry created = makeArgumentEntry(this.engine.mergeString(joined), values);
+      hit = created;
+      if (maybeBucket == null) {
+        bucket = [];
+        this.argumentCache.set(first, bucket);
+      }
+      if (bucket.length >= 256) dropFirstArgumentEntry(bucket);
+      bucket.push(created);
+      this.argumentCount = this.argumentCount + 1;
+      if (this.argumentCount > 1000) {
+        this.argumentCount = 0;
+        this.previousArgumentCache = this.argumentCache;
+        this.argumentCache = new Map<string, ArgumentEntry[]>();
+      }
+    }
+    if (hit == null) throw JS.construct(Error, "cn: argument cache invariant");
+    ArgumentEntry actualHit = hit;
+    prior = this.lastHit;
+    if (prior != null && prior != actualHit) prior.n = actualHit;
+    this.lastHit = actualHit;
+    return actualHit.r;
+  }
+
+  string call(JsValue args) {
+    int length = args.length.toInt();
+    if ((length | 1) == 3) {
+      ArgumentEntry? last = this.lastHit;
+      if (last != null) {
+        JsValue predictionValue = last.n;
+        ArgumentEntry? prediction = null;
+        if (predictionValue.truthy()) prediction = JS.assume(predictionValue);
+        if (prediction != null && this.matchThree(prediction, args[0], args[1], args[2])) {
+          this.lastHit = prediction;
+          return prediction.r;
+        }
+        if (last != prediction && this.matchThree(last, args[0], args[1], args[2])) return last.r;
+      }
+      return this.resolveArguments(args, true);
+    }
+    if (length == 1) {
+      JsValue value = args[0];
+      if (value is string) return this.engine.mergeString(value);
+      return this.engine.mergeString(resolveValue(value, true));
+    }
+    ArgumentEntry? last = this.lastHit;
+    if (last != null) {
+      JsValue predictionValue = last.n;
+      ArgumentEntry? prediction = null;
+      if (predictionValue.truthy()) prediction = JS.assume(predictionValue);
+      if (prediction != null && this.matchArguments(prediction, args)) {
+        this.lastHit = prediction;
+        return prediction.r;
+      }
+      if (last != prediction && this.matchArguments(last, args)) return last.r;
+    }
+    return this.resolveArguments(args, true);
+  }
+}
+
+export string resolveValue(JsValue value, bool clsxMode) {
+  if (!value.truthy()) return "";
+  if (value is string) return value;
+  string output = "";
+  bool isSequence = value.isArray();
+  if (!clsxMode && value["length"] is float) isSequence = true;
+  if (isSequence) {
+    int length = value.length.toInt();
+    int index = 0;
+    while (index < length) {
+      JsValue item = value[index];
+      if (item.truthy()) {
+        string resolved = "";
+        if (item is string) resolved = item;
+        else resolved = resolveValue(item, clsxMode);
+        if (resolved != "") {
+          if (output != "") output = output + " ";
+          output = output + resolved;
+        }
+      }
+      index = index + 1;
+    }
+    return output;
+  }
+  if (clsxMode) {
+    if (value is float) return "" + value;
+    if (value.isObject()) {
+      for (string key in value) {
+        if (value[key].truthy()) {
+          if (output != "") output = output + " ";
+          output = output + key;
+        }
+      }
+    }
+  }
+  return output;
+}
+
+string joinArguments(JsValue argumentsValue, bool clsxMode) {
+  string output = "";
+  int length = argumentsValue.length.toInt();
+  int index = 0;
+  while (index < length) {
+    JsValue argument = argumentsValue[index];
+    if (argument.truthy()) {
+      string resolved = "";
+      if (argument is string) resolved = argument;
+      else resolved = resolveValue(argument, clsxMode);
+      if (resolved != "") {
+        if (output != "") output = output + " ";
+        output = output + resolved;
+      }
+    }
+    index = index + 1;
+  }
+  return output;
+}
+
+export MergeEngine createEngine(Tables tables, int cacheSize = 8192, string prefix = "") {
+  return new MergeEngine(tables, cacheSize, prefix);
+}
+
+export JsValue createCn(Tables tables, int cacheSize = 8192, string prefix = "") {
+  MergeEngine engine = new MergeEngine(tables, cacheSize, prefix);
+  CnCache cnCache = new CnCache(engine);
+  return JS.staticRest((JsValue args) => {
+    int length = args.length.toInt();
+    if ((length | 1) == 3) {
+      JsValue valueZero = args[0];
+      JsValue valueOne = args[1];
+      JsValue valueTwo = args[2];
+      ArgumentEntry? last = cnCache.lastHit;
+      if (last != null) {
+        JsValue predictionValue = last.n;
+        ArgumentEntry? prediction = null;
+        if (predictionValue.truthy()) prediction = JS.assume(predictionValue);
+        if (prediction != null) {
+          int position = 0;
+          bool matches = true;
+          if (valueZero.truthy()) {
+            if (!JS.strictEqual(valueZero, prediction.a0)) matches = false;
+            position = 1;
+          }
+          if (matches && valueOne.truthy()) {
+            string expected = prediction.a1;
+            if (position == 0) expected = prediction.a0;
+            if (!JS.strictEqual(valueOne, expected)) matches = false;
+            position = position + 1;
+          }
+          if (matches && valueTwo.truthy()) {
+            string expected = prediction.a0;
+            if (position == 1) expected = prediction.a1;
+            else if (position == 2) expected = prediction.a2;
+            if (!JS.strictEqual(valueTwo, expected)) matches = false;
+            position = position + 1;
+          }
+          if (matches && position == prediction.t) {
+            cnCache.lastHit = prediction;
+            return prediction.r;
+          }
+        }
+        if (last != prediction) {
+          int position = 0;
+          bool matches = true;
+          if (valueZero.truthy()) {
+            if (!JS.strictEqual(valueZero, last.a0)) matches = false;
+            position = 1;
+          }
+          if (matches && valueOne.truthy()) {
+            string expected = last.a1;
+            if (position == 0) expected = last.a0;
+            if (!JS.strictEqual(valueOne, expected)) matches = false;
+            position = position + 1;
+          }
+          if (matches && valueTwo.truthy()) {
+            string expected = last.a0;
+            if (position == 1) expected = last.a1;
+            else if (position == 2) expected = last.a2;
+            if (!JS.strictEqual(valueTwo, expected)) matches = false;
+            position = position + 1;
+          }
+          if (matches && position == last.t) return last.r;
+        }
+      }
+      return cnCache.resolveArguments(args, true);
+    }
+    if (length == 1) {
+      JsValue only = args[0];
+      if (only is string) {
+        if (engine.cacheSize == 0) return engine.mergeUncached(only);
+        string? cached = engine.cache[only];
+        if (cached != null) return cached;
+        return engine.mergeStringMiss(only);
+      }
+      return engine.mergeString(resolveValue(only, true));
+    }
+    return cnCache.call(args);
+  });
+}
+
+export JsValue createTwMerge(Tables tables, int cacheSize = 8192, string prefix = "") {
+  MergeEngine engine = new MergeEngine(tables, cacheSize, prefix);
+  return JS.staticRest((JsValue args) => {
+    if (args.length == 1.0) {
+      JsValue only = args[0];
+      if (only is string) {
+        if (engine.cacheSize == 0) return engine.mergeUncached(only);
+        string? cached = engine.cache[only];
+        if (cached != null) return cached;
+        return engine.mergeStringMiss(only);
+      }
+    }
+    string joined = joinArguments(args, false);
+    return engine.mergeString(joined);
+  });
+}
+
+export JsValue clsx = JS.staticRest((JsValue args) => {
+  return joinArguments(args, true);
+});
+
+export JsValue twJoin = JS.staticRest((JsValue args) => {
+  return joinArguments(args, false);
+});
