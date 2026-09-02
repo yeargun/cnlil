@@ -18,9 +18,9 @@ cn("px-2 py-1", false, "px-4") // "py-1 px-4"
 
 - 56,353 upstream correctness cases, 300,000 seeded grammar-fuzz cases, 60,005 joining and
   `clsx` cases: 416,358 comparisons, zero mismatches
-- benchmarked against upstream in interleaved rounds on an idle machine, reported as the median
-  of the per-round ratios with its range: `arb` 0.96, `repeat` 1.00, `workset` 1.02, `short` 1.03,
-  `single` 1.04, `loop` 1.06, `ssr` and `long` 1.09, `dup-loop` 1.12
+- benchmarked against upstream in interleaved rounds, reported as the median of the per-round
+  ratios with its range: `repeat` 1.00, `short` `arb` and `workset` 1.01-1.02, `long` `single`
+  and `loop` 1.04, `ssr` 1.07, `dup-loop` 1.08
 - smaller than upstream's own esbuild-minified bundle under raw, gzip and Brotli at the same
   boundary ([sizes report](reports/sizes.json); the canonical `lilscript-codec` numbers are
   26,696 / 10,509 / 9,401 against 27,459 / 10,835 / 9,783)
@@ -34,9 +34,9 @@ custom-config compiler, `cn/config`, `cn/compiler`, CLI, and compatible public `
 are not implemented. The runtime target is not met on every lane: the committed
 [isolated-process report](reports/benchmark.json) is authoritative, the Pages site deliberately
 displays regressions, and the remaining gap is attributed in the LilScript workstream
-(`finer/hypotheses/048-*` and `049-*` in the compiler repository). What is left is one compiler
-item: a `string[]` element read carries a `|| ""` hole guard, and on the argument-cache walk that
-guard alone is the difference between 1.09 and 1.04 on `dup-loop`.
+(`finer/hypotheses/048-*` and `049-*` in the compiler repository). The widest lane left is `ssr`,
+all cold merges, and `dup-loop`, whose argument-cache walk the compiler improved by dropping a
+`string[]` hole guard it can now prove unobservable.
 
 ## Reproduce
 
