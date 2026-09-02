@@ -16,14 +16,23 @@ cn("px-2 py-1", false, "px-4") // "py-1 px-4"
 
 ## Current result
 
-- 56,353 upstream correctness cases
-- 300,000 seeded grammar-fuzz cases
-- 60,005 joining and `clsx` cases
-- 416,358 total comparisons, zero mismatches
-- `int`, `bool`, `Int32Array`, `Uint8Array`, typed maps, and typed classes throughout the engine
+- 56,353 upstream correctness cases, 300,000 seeded grammar-fuzz cases, 60,005 joining and
+  `clsx` cases: 416,358 comparisons, zero mismatches
+- smaller than upstream's own esbuild-minified bundle under raw, gzip and Brotli at the same
+  boundary ([sizes report](reports/sizes.json); the canonical `lilscript-codec` numbers are
+  26,696 / 10,509 / 9,401 against 27,459 / 10,835 / 9,783)
+- `int`, `bool`, `Int32Array`, `Uint8Array`, `Float64Array`, typed maps and typed records
+  throughout the engine; the engine state is module bindings, the shape upstream's closure has,
+  and the hashes are `Math.imul` like upstream's
 - no runtime dependencies
 
-This is a default-runtime milestone, not yet a full package-surface replacement. The upstream custom-config compiler, `cn/config`, `cn/compiler`, CLI, and compatible public `createEngine` API are not implemented. The benchmark target is also not yet met on every workload: the committed [isolated-process report](reports/benchmark.json) is authoritative and the Pages site deliberately displays regressions.
+This is a default-runtime milestone, not yet a full package-surface replacement. The upstream
+custom-config compiler, `cn/config`, `cn/compiler`, CLI, and compatible public `createEngine` API
+are not implemented. The runtime target is not met yet: the committed
+[isolated-process report](reports/benchmark.json) is authoritative, the Pages site deliberately
+displays regressions, and the remaining gap is attributed in the LilScript workstream
+(`finer/hypotheses/048-*` in the compiler repository: module-scope state, the argument-cache
+paths).
 
 ## Reproduce
 
@@ -37,13 +46,13 @@ npm run measure
 npm run check:site
 ```
 
-`vendor/cn` is an exact git submodule pin. `scripts/generate-tables.mjs` deterministically converts its generated TypeScript tables into typed LilScript data; `scripts/check-generated.mjs` verifies drift. Production artifacts use `lilscript.toml`; the faster local compile uses `lilscript.dev.toml`.
+`vendor/cn` is an exact git submodule pin. `scripts/generate-tables.mjs` deterministically converts its generated TypeScript tables into typed LilScript data; `scripts/check-generated.mjs` verifies drift. Production artifacts use `lilscript.toml` (level 13, production candidate search, about 25 s on a 16-thread machine); the faster local compile uses `lilscript.dev.toml`.
 
 ## Layout
 
-- `src/engine.lil` — merge engine, validators, caches, `clsx`, and `twJoin`
-- `src/default.lil` — the specialized default `cn` and `twMerge` instance
-- `src/tables.lil` — generated typed table representation
+- `src/engine.lil` — merge engine, validators and the whole-string cache, as module state
+- `src/default.lil` — `cn` with its argument cache, `twMerge`, `clsx`, `twJoin`
+- `src/tables.lil` — generated typed tables, one binding per table
 - `scripts/test-upstream.mjs` — upstream suite plus deterministic differential fuzzing
 - `scripts/bench.mjs` — upstream isolated-process benchmark harness
 - `site/` — the shared evidence-lab GitHub Pages presentation

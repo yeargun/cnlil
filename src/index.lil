@@ -1,4 +1,3 @@
-import { clsx, twJoin } from "./engine.lil";
-import { cn, twMerge } from "./default.lil";
+import { clsx, cn, twJoin, twMerge } from "./default.lil";
 
 export { clsx, cn, twJoin, twMerge };

@@ -10,14 +10,14 @@ call_site_specialization = true
 identical_function_folding = true
 
 [javascript]
-priority = "performance-first"
-optimization_level = 8
+priority = "size-first"
+optimization_level = 13
 cost_model = "brotli"
 public_aggregate_abi = "positional"
 assume_pristine_builtins = true
 strip_console = true
 pool_numeric_literals = true
-candidate_search = "off"
+candidate_search = "production"
 candidate_limit = 1536
 candidate_byte_budget = 1048576
 candidate_beam_width = 12
