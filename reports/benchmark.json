@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T20:47:41.285Z",
+  "generatedAt": "2026-09-02T22:15:53.975Z",
   "node": "v20.19.0",
   "platform": "linux-x64",
   "upstreamCommit": "c003999e2456266c1b0e9d8ed4e2ca855d5eb38f",
@@ -8,65 +8,65 @@
     {
       "kind": "merge",
       "workload": "short",
-      "lilNs": 23.622124999999983,
-      "officialNs": 21.159652500000025,
-      "ratio": 1.1163758478547772
+      "lilNs": 21.843152499999974,
+      "officialNs": 23.125695000000093,
+      "ratio": 0.944540369489431
     },
     {
       "kind": "merge",
       "workload": "long",
-      "lilNs": 23.797725000000014,
-      "officialNs": 22.79235,
-      "ratio": 1.0441101948680156
+      "lilNs": 24.145625000000166,
+      "officialNs": 25.938519999999983,
+      "ratio": 0.9308790555513646
     },
     {
       "kind": "merge",
       "workload": "arb",
-      "lilNs": 4307.890633333333,
-      "officialNs": 3449.772250000001,
-      "ratio": 1.24874638705014
+      "lilNs": 3975.2076666666653,
+      "officialNs": 3826.53465,
+      "ratio": 1.0388531740243527
     },
     {
       "kind": "merge",
       "workload": "repeat",
-      "lilNs": 11.704351000000031,
-      "officialNs": 10.667756000000026,
-      "ratio": 1.09717085767616
+      "lilNs": 20.914967999999988,
+      "officialNs": 21.034131000000002,
+      "ratio": 0.9943347790312794
     },
     {
       "kind": "merge",
       "workload": "ssr",
-      "lilNs": 782.1689833333334,
-      "officialNs": 635.0767166666667,
-      "ratio": 1.23161338277163
+      "lilNs": 1302.0384750000005,
+      "officialNs": 1317.3815083333334,
+      "ratio": 0.9883533864440348
     },
     {
       "kind": "merge",
       "workload": "workset",
-      "lilNs": 26.744805000000014,
-      "officialNs": 23.662800000000033,
-      "ratio": 1.1302468431462032
+      "lilNs": 46.06454250000013,
+      "officialNs": 45.04829749999999,
+      "ratio": 1.0225590101379556
     },
     {
       "kind": "component",
       "workload": "single",
-      "lilNs": 11.509788333333333,
-      "officialNs": 10.682435,
-      "ratio": 1.0774498822911942
+      "lilNs": 18.025874999999992,
+      "officialNs": 19.28027583333332,
+      "ratio": 0.9349386469272075
     },
     {
       "kind": "component",
       "workload": "loop",
-      "lilNs": 16.06333833333334,
-      "officialNs": 14.57379166666667,
-      "ratio": 1.1022072155781928
+      "lilNs": 30.78602083333332,
+      "officialNs": 28.788107499999995,
+      "ratio": 1.0694006486301098
     },
     {
       "kind": "component",
       "workload": "dup-loop",
-      "lilNs": 53.92083999999997,
-      "officialNs": 41.115175,
-      "ratio": 1.311458360568816
+      "lilNs": 78.90458083333333,
+      "officialNs": 83.49186083333336,
+      "ratio": 0.9450571594139316
     }
   ]
 }

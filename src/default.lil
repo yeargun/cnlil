@@ -61,15 +61,18 @@ bool matchThree(ArgumentEntry entry, JsValue valueZero, JsValue valueOne, JsValu
   return index == entry.t;
 }
 
-// loop-form verify over resolved values (identity compares; non-strings never match)
+// loop-form verify over resolved values (identity compares; non-strings never match).
+// The entry's array is read once: a member read inside the comparison loop is one property
+// load per compared argument, and the compiler has no loop-invariant motion (finer 048).
 bool matchValues(ArgumentEntry entry, JsValue[] values) {
+  string[] entryValues = entry.a;
   int entryIndex = 0;
   int index = 0;
   int length = values.length;
   while (index < length) {
     JsValue value = values[index];
     if (value.truthy()) {
-      if (!JS.strictEqual(value, entry.a[entryIndex])) return false;
+      if (!JS.strictEqual(value, entryValues[entryIndex])) return false;
       entryIndex = entryIndex + 1;
     }
     index = index + 1;
@@ -133,33 +136,37 @@ string resolveArguments(JsValue[] values, bool alreadyProbed) {
     maybeBucket = previousArgumentCache.get(first);
     if (maybeBucket != null) argumentCache.set(first, maybeBucket);
   }
-  ArgumentEntry[] bucket = [];
-  if (maybeBucket != null) bucket = maybeBucket;
+  // The walk runs only when the bucket exists, so a hit costs no allocation; the entry's
+  // values are read once per candidate rather than once per compared argument.
   ArgumentEntry? hit = null;
-  int bucketIndex = 0;
-  while (bucketIndex < bucket.length) {
-    ArgumentEntry candidate = bucket[bucketIndex];
-    if (candidate.t == truthy) {
-      int valueIndex = 1;
-      bool matches = true;
-      index = firstIndex + 1;
-      while (index < argumentLength) {
-        JsValue value = values[index];
-        if (value.truthy()) {
-          if (!JS.strictEqual(value, candidate.a[valueIndex])) {
-            matches = false;
-            break;
+  if (maybeBucket != null) {
+    ArgumentEntry[] bucket = maybeBucket;
+    int bucketIndex = 0;
+    while (bucketIndex < bucket.length) {
+      ArgumentEntry candidate = bucket[bucketIndex];
+      if (candidate.t == truthy) {
+        string[] entryValues = candidate.a;
+        int valueIndex = 1;
+        bool matches = true;
+        index = firstIndex + 1;
+        while (index < argumentLength) {
+          JsValue value = values[index];
+          if (value.truthy()) {
+            if (!JS.strictEqual(value, entryValues[valueIndex])) {
+              matches = false;
+              break;
+            }
+            valueIndex = valueIndex + 1;
           }
-          valueIndex = valueIndex + 1;
+          index = index + 1;
         }
-        index = index + 1;
+        if (matches) {
+          hit = candidate;
+          break;
+        }
       }
-      if (matches) {
-        hit = candidate;
-        break;
-      }
+      bucketIndex = bucketIndex + 1;
     }
-    bucketIndex = bucketIndex + 1;
   }
   if (hit == null) {
     string joined = first;
@@ -179,10 +186,9 @@ string resolveArguments(JsValue[] values, bool alreadyProbed) {
     if (!seenBefore(joined)) return mergeUncached(joined);
     ArgumentEntry created = makeArgumentEntry(mergeString(joined), strings);
     hit = created;
-    if (maybeBucket == null) {
-      bucket = [];
-      argumentCache.set(first, bucket);
-    }
+    ArgumentEntry[] bucket = [];
+    if (maybeBucket != null) bucket = maybeBucket;
+    else argumentCache.set(first, bucket);
     if (bucket.length >= 256) dropFirstArgumentEntry(bucket);
     bucket.push(created);
     argumentCount = argumentCount + 1;
