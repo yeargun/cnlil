@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-02T23:45:38.265Z",
+  "generatedAt": "2026-09-03T08:06:40.378Z",
   "boundary": "browser ESM bundle of the default entry, esbuild 0.25.12 minify, ES2022",
   "upstreamCommit": "c003999e2456266c1b0e9d8ed4e2ca855d5eb38f",
   "lil": {
-    "raw": 26817,
-    "gzip9": 10694,
-    "brotli11": 9400
+    "raw": 26815,
+    "gzip9": 10695,
+    "brotli11": 9456
   },
   "official": {
     "raw": 27459,
@@ -13,8 +13,8 @@
     "brotli11": 9783
   },
   "ratio": {
-    "raw": 0.9766196875341419,
-    "gzip9": 0.9705935741513886,
-    "brotli11": 0.9608504548706941
+    "raw": 0.9765468516697622,
+    "gzip9": 0.9706843347249955,
+    "brotli11": 0.9665746703465194
   }
 }

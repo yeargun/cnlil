@@ -1,100 +1,100 @@
 {
-  "generatedAt": "2026-09-02T23:46:19.357Z",
-  "node": "v20.19.0",
+  "generatedAt": "2026-09-03T08:07:15.753Z",
+  "node": "v22.23.2",
   "platform": "linux-x64",
   "upstreamCommit": "c003999e2456266c1b0e9d8ed4e2ca855d5eb38f",
-  "rounds": 5,
-  "methodology": "upstream isolated-process harness; per run 25% warmup and best of five measured blocks; 5 interleaved rounds per lane, reported as the median of the per-round ratios with its range",
+  "rounds": 7,
+  "methodology": "upstream isolated-process harness; per run 25% warmup and best of five measured blocks; 7 interleaved rounds per lane, reported as the median of the per-round ratios with its range",
   "rows": [
     {
       "kind": "merge",
       "workload": "short",
-      "lilNs": 10.730904999999993,
-      "officialNs": 10.603794999999963,
-      "ratio": 1.0060813616370785,
-      "ratioLow": 0.9848827707438765,
-      "ratioHigh": 1.0542191578694773,
-      "rounds": 5
+      "lilNs": 4.7258500000000225,
+      "officialNs": 5.317559999999979,
+      "ratio": 1.0000692997491307,
+      "ratioLow": 0.8428354839515786,
+      "ratioHigh": 1.0187855458307153,
+      "rounds": 7
     },
     {
       "kind": "merge",
       "workload": "long",
-      "lilNs": 11.064660000000117,
-      "officialNs": 10.674180000000035,
-      "ratio": 1.0407093030419519,
-      "ratioLow": 0.9714992225978961,
-      "ratioHigh": 1.067905764117898,
-      "rounds": 5
+      "lilNs": 5.281130000000048,
+      "officialNs": 5.344674999999981,
+      "ratio": 0.9663541021463006,
+      "ratioLow": 0.823896195477298,
+      "ratioHigh": 1.1277497800953418,
+      "rounds": 7
     },
     {
       "kind": "merge",
       "workload": "arb",
-      "lilNs": 1791.4938500000005,
-      "officialNs": 1747.9420500000003,
-      "ratio": 1.0192271484879583,
-      "ratioLow": 1.013186232443546,
-      "ratioHigh": 1.049894980408075,
-      "rounds": 5
+      "lilNs": 758.3400333333325,
+      "officialNs": 792.3756499999996,
+      "ratio": 0.9582282791667202,
+      "ratioLow": 0.8762417114945555,
+      "ratioHigh": 1.0359639140238361,
+      "rounds": 7
     },
     {
       "kind": "merge",
       "workload": "repeat",
-      "lilNs": 10.621738999999991,
-      "officialNs": 10.597994999999997,
-      "ratio": 0.9993241571496159,
-      "ratioLow": 0.9986455619023612,
-      "ratioHigh": 1.0042275877856464,
-      "rounds": 5
+      "lilNs": 6.337327999999999,
+      "officialNs": 6.279462999999993,
+      "ratio": 1.0077735724864245,
+      "ratioLow": 0.9470930574427192,
+      "ratioHigh": 1.057349696486695,
+      "rounds": 7
     },
     {
       "kind": "merge",
       "workload": "ssr",
-      "lilNs": 712.113125,
-      "officialNs": 673.400033333334,
-      "ratio": 1.0729021660202038,
-      "ratioLow": 1.020237148113647,
-      "ratioHigh": 2.364503842960899,
-      "rounds": 5
+      "lilNs": 349.8614916666668,
+      "officialNs": 354.1822916666665,
+      "ratio": 0.9899413925685631,
+      "ratioLow": 0.9363386044512603,
+      "ratioHigh": 0.9963580325434942,
+      "rounds": 7
     },
     {
       "kind": "merge",
       "workload": "workset",
-      "lilNs": 24.29325250000005,
-      "officialNs": 23.927467500000006,
-      "ratio": 1.013905261050484,
-      "ratioLow": 0.9974597444007358,
-      "ratioHigh": 1.0464142308416053,
-      "rounds": 5
+      "lilNs": 11.399237499999941,
+      "officialNs": 10.902572500000005,
+      "ratio": 1.0138402092370864,
+      "ratioLow": 0.9775222901772544,
+      "ratioHigh": 1.3395643551097696,
+      "rounds": 7
     },
     {
       "kind": "component",
       "workload": "single",
-      "lilNs": 11.100439166666666,
-      "officialNs": 10.658572499999995,
-      "ratio": 1.040855558796596,
-      "ratioLow": 1.0088962086867486,
-      "ratioHigh": 1.047700782938183,
-      "rounds": 5
+      "lilNs": 7.92151416666666,
+      "officialNs": 7.593508333333337,
+      "ratio": 1.042541933197124,
+      "ratioLow": 1.0256342014052364,
+      "ratioHigh": 1.051556208647518,
+      "rounds": 7
     },
     {
       "kind": "component",
       "workload": "loop",
-      "lilNs": 15.425612499999996,
-      "officialNs": 14.734021666666688,
-      "ratio": 1.044699452861093,
-      "ratioLow": 1.0208915671733456,
-      "ratioHigh": 1.058464463142162,
-      "rounds": 5
+      "lilNs": 8.414575,
+      "officialNs": 7.888999166666662,
+      "ratio": 1.0636349203146709,
+      "ratioLow": 1.0409736663442317,
+      "ratioHigh": 1.1005437615692122,
+      "rounds": 7
     },
     {
       "kind": "component",
       "workload": "dup-loop",
-      "lilNs": 43.72889083333334,
-      "officialNs": 40.62404583333333,
-      "ratio": 1.0752376388136924,
-      "ratioLow": 1.0169052481522365,
-      "ratioHigh": 1.1014821723883619,
-      "rounds": 5
+      "lilNs": 23.559320000000003,
+      "officialNs": 22.199164999999986,
+      "ratio": 1.0550299712105173,
+      "ratioLow": 0.9957742389479531,
+      "ratioHigh": 1.111999633413423,
+      "rounds": 7
     }
   ]
 }
