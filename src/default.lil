@@ -13,7 +13,10 @@ export extern class ArgumentEntry {
   string a1;
   string a2;
   string[] a;
-  JsValue n;
+  // The entry that followed this one last time. Typed, as upstream types it: a `JsValue` here
+  // makes every prediction hop a truthiness test and a `JS.assume`, where the original does one
+  // `!== null` (finer 049).
+  ArgumentEntry? n;
 }
 
 ArgumentEntry makeArgumentEntry(string result, string[] values) {
@@ -84,10 +87,7 @@ string resolveArguments(JsValue[] values, bool alreadyProbed) {
   int argumentLength = values.length;
   ArgumentEntry? prior = lastHit;
   ArgumentEntry? prediction = null;
-  if (prior != null) {
-    JsValue predictedValue = prior.n;
-    if (predictedValue.truthy()) prediction = JS.assume(predictedValue);
-  }
+  if (prior != null) prediction = prior.n;
   if (!alreadyProbed) {
     if (prediction != null && matchValues(prediction, values)) {
       lastHit = prediction;
@@ -239,15 +239,15 @@ export JsValue cn = JS.staticRest((JsValue args) => {
     JsValue valueTwo = args[2];
     ArgumentEntry? last = lastHit;
     if (last != null) {
-      JsValue predictionValue = last.n;
-      if (predictionValue.truthy()) {
-        ArgumentEntry prediction = JS.assume(predictionValue);
-        if (matchThree(prediction, valueZero, valueOne, valueTwo)) {
-          lastHit = prediction;
-          return prediction.r;
-        }
+      ArgumentEntry? prediction = last.n;
+      if (prediction != null && matchThree(prediction, valueZero, valueOne, valueTwo)) {
+        lastHit = prediction;
+        return prediction.r;
       }
-      if (!JS.strictEqual(last, predictionValue) && matchThree(last, valueZero, valueOne, valueTwo)) return last.r;
+      // `!=` on two references lowers to loose equality, which V8 runs through the abstract
+      // comparison instead of a pointer compare; measured 1.11 against 1.03 on component:single.
+      // `last` is non-null here, so strict is the same question (finer 052).
+      if (!JS.strictEqual(last, prediction) && matchThree(last, valueZero, valueOne, valueTwo)) return last.r;
     }
     JsValue[] values = [valueZero, valueOne, valueTwo];
     return resolveArguments(values, true);
@@ -261,9 +261,8 @@ export JsValue cn = JS.staticRest((JsValue args) => {
   // genuine miss copies into an array for the resolve path
   ArgumentEntry? last = lastHit;
   if (last != null) {
-    JsValue predictionValue = last.n;
-    if (predictionValue.truthy()) {
-      ArgumentEntry prediction = JS.assume(predictionValue);
+    ArgumentEntry? prediction = last.n;
+    if (prediction != null) {
       int entryIndex = 0;
       int index = 0;
       bool matches = true;
@@ -283,7 +282,7 @@ export JsValue cn = JS.staticRest((JsValue args) => {
         return prediction.r;
       }
     }
-    if (!JS.strictEqual(last, predictionValue)) {
+    if (!JS.strictEqual(last, prediction)) {
       int entryIndex = 0;
       int index = 0;
       bool matches = true;
