@@ -15,7 +15,8 @@ import { build as esbuild } from "esbuild"
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const lilscriptRoot = process.env.LILSCRIPT_ROOT ?? resolve(root, "..", "lilscript")
 const dist = resolve(root, "dist")
-const banner = "/*! @itslil/cn 0.2.4 | LilScript reimplementation of cn | MIT */\n"
+// No in-file banner: the MIT notice ships as LICENSE and NOTICE.md in the package
+// `files` list, and 65 bytes of unique comment text costs 36 Brotli in the artifact.
 
 function compilerPath() {
   const candidates = [
@@ -56,8 +57,8 @@ if (process.argv.includes("--compile") || !existsSync(resolve(dist, "cn.raw.js")
   ])
 }
 
-writeFileSync(resolve(dist, "index.js"), banner + readFileSync(resolve(dist, "cn.raw.js"), "utf8").trimEnd() + "\n")
-writeFileSync(resolve(dist, "lite.js"), banner + readFileSync(resolve(dist, "lite.raw.js"), "utf8").trimEnd() + "\n")
+writeFileSync(resolve(dist, "index.js"), readFileSync(resolve(dist, "cn.raw.js"), "utf8").trimEnd() + "\n")
+writeFileSync(resolve(dist, "lite.js"), readFileSync(resolve(dist, "lite.raw.js"), "utf8").trimEnd() + "\n")
 
 for (const entry of ["index", "lite"]) {
   await esbuild({
@@ -71,7 +72,6 @@ for (const entry of ["index", "lite"]) {
     minifyWhitespace: true,
     minifyIdentifiers: false,
     minifySyntax: false,
-    banner: { js: banner },
     logLevel: "error",
   })
 }
