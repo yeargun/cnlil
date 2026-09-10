@@ -242,12 +242,38 @@
   "publicationSourceFingerprint": "4d75fdb1bd1b4f192cb4dcc0db539366ec1afd06e912fe12cf827ec8451cbd97",
   "comparisonArtifacts": [
     {
+      "path": "site/esm-comparison/original.js",
+      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+    },
+    {
       "path": "site/esm-comparison/lilscript.js",
       "sha256": "3cf068d540137ed0e623b5d57700abc9df48bc80829f385e3d8592d4bdbf53e9"
     },
     {
-      "path": "site/esm-comparison/original.js",
-      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+      "path": "site/source-build.json",
+      "sha256": "6b2e7984d6eef38eabd5f20ac96f8520a304278cf946a83e112b6225addfa3cb"
+    },
+    {
+      "path": "site/comparison.json",
+      "sha256": "ebb5f950bbbbd78623ca4b6ae88b5e3958342ba9ee30412b95fecc6cb11dea89"
     }
-  ]
+  ],
+  "sourceBuildReceipt": "comparison/source-build/result.json",
+  "currentMeasurement": {
+    "compiler": {
+      "commit": "4dc4e3337d9ffd758d65e3852682d6e13d9331c1",
+      "sha256": "0616048498eb9eb2e4bd75b39e8e6a083733ada647e16108edfee30ad183beeb"
+    },
+    "source": {
+      "commit": "76a975fdbfdcd4b07752bb6462510bcc8a359812"
+    },
+    "upstream": {
+      "repository": "https://github.com/shadcn-ui/cn.git",
+      "commit": "989c25ecfaed76dcf05e1f9996b6dfcbed157d7f",
+      "package": "cn",
+      "version": "0.2.4",
+      "directory": "packages/cn"
+    },
+    "compatibility": "Repository checks completed successfully."
+  }
 }

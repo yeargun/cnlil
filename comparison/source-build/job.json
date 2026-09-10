@@ -1,0 +1,37 @@
+{
+  "source": {
+    "repository": "https://github.com/shadcn-ui/cn.git",
+    "commit": "989c25ecfaed76dcf05e1f9996b6dfcbed157d7f",
+    "package": "cn",
+    "version": "0.2.4",
+    "directory": "packages/cn"
+  },
+  "portSource": {
+    "commit": "76a975fdbfdcd4b07752bb6462510bcc8a359812"
+  },
+  "compilerCommit": "4dc4e3337d9ffd758d65e3852682d6e13d9331c1",
+  "install": [
+    "corepack",
+    "pnpm",
+    "install",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "setup": [],
+  "build": [
+    "corepack",
+    "pnpm",
+    "--filter",
+    "cn",
+    "build"
+  ],
+  "clean": [
+    "packages/cn/dist"
+  ],
+  "entry": "packages/cn/dist/index.js",
+  "defaultExport": false,
+  "external": [],
+  "esmScope": "cn@0.2.4 public ESM runtime graph; dependency installation excluded; this is a comparison bundle build, not the upstream vendor release pipeline",
+  "lilscriptBuild": "node scripts/build.mjs --compile --force",
+  "test": "node scripts/test-upstream.mjs"
+}

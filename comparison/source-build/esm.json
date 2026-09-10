@@ -1,0 +1,67 @@
+{
+  "source": {
+    "repository": "https://github.com/shadcn-ui/cn.git",
+    "commit": "989c25ecfaed76dcf05e1f9996b6dfcbed157d7f",
+    "package": "cn",
+    "version": "0.2.4",
+    "directory": "packages/cn"
+  },
+  "entry": "packages/cn/dist/index.js",
+  "scope": "cn@0.2.4 public ESM runtime graph; dependency installation excluded; this is a comparison bundle build, not the upstream vendor release pipeline",
+  "external": [],
+  "samples": [
+    {
+      "bundleSeconds": 0.008321033999999998,
+      "wallSeconds": 0.13209882099999998
+    },
+    {
+      "bundleSeconds": 0.004070101000000022,
+      "wallSeconds": 0.094087909
+    },
+    {
+      "bundleSeconds": 0.003846626000000015,
+      "wallSeconds": 0.07593786800000003
+    }
+  ],
+  "medianSeconds": 0.094087909,
+  "toolchain": {
+    "esbuild": "0.28.1",
+    "terser": "5.51.2"
+  },
+  "artifacts": [
+    {
+      "path": "original.esm.js",
+      "raw": 27004,
+      "gzip9": 10560,
+      "brotli11": 9394,
+      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+    },
+    {
+      "path": "original.unminified.js",
+      "raw": 47695,
+      "gzip9": 13352,
+      "brotli11": 11985,
+      "sha256": "59e6113c26b8856457cdb427706f4465228749a276dd5ad185a37b5ffb66319c"
+    },
+    {
+      "path": "original.terser-nomangle.js",
+      "raw": 34777,
+      "gzip9": 11965,
+      "brotli11": 10871,
+      "sha256": "359f2f41a232cd5fa0cbb33f56315067162fea0d2db46f2b531f0d45c2c2f35f"
+    },
+    {
+      "path": "original.esbuild.js",
+      "raw": 27849,
+      "gzip9": 10940,
+      "brotli11": 9842,
+      "sha256": "75546a563822dd0788d790af3892dee8ebe01cf617ee72f2b06b6120f18281a7"
+    }
+  ],
+  "inputs": [
+    "packages/cn/dist/tables.js",
+    "packages/cn/dist/engine.js",
+    "packages/cn/dist/index.js",
+    "public-esm-entry.mjs"
+  ]
+}
