@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-09-03T12:53:43.511Z",
-  "boundary": "browser ESM bundle of the default entry, esbuild 0.25.12 minify, ES2022",
+  "generatedAt": "2026-09-10T13:56:40Z",
+  "boundary": "cn@0.2.4 public ESM runtime graph; dependency installation excluded; this is a comparison bundle build, not the upstream vendor release pipeline Sizes use canonical zlib 1.3.1 gzip-9 and Google Brotli 1.1.0 quality 11.",
   "upstreamCommit": "c003999e2456266c1b0e9d8ed4e2ca855d5eb38f",
   "lil": {
-    "raw": 26788,
-    "gzip9": 10713,
-    "brotli11": 9443
+    "raw": 26761,
+    "gzip9": 10589,
+    "brotli11": 9304
   },
   "official": {
-    "raw": 27459,
-    "gzip9": 11018,
-    "brotli11": 9783
+    "raw": 27004,
+    "gzip9": 10560,
+    "brotli11": 9394
   },
   "ratio": {
-    "raw": 0.9755635675006373,
-    "gzip9": 0.9723180250499183,
-    "brotli11": 0.96524583461106
+    "raw": 0.9910013331358317,
+    "gzip9": 1.002746212121212,
+    "brotli11": 0.9904194166489249
   }
 }

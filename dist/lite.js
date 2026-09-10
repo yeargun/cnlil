@@ -1,1 +1,1 @@
-let a=(0,function(){for(var t,c=arguments.length,a="",e=0;e<c;e++)t=arguments[e],t&&"string"==typeof t&&(""!=a&&(a=a+" "),a=a+t);return a});export{a as clsx,a as default}
+var _a,_b;(function(){var s=(0,function(){for(var b,s=arguments.length,a='',c=0;c<s;c++)b=arguments[c],b&&'string'==typeof b&&(''!=a&&(a=a+' '),a=a+b);return a});_a=s;_b=s})();export{_a as clsx,_b as default}

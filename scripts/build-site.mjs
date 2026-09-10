@@ -23,3 +23,6 @@ const benchmark = JSON.parse(await readFile(resolve(root, "reports/benchmark.jso
 await writeFile(resolve(output, "results.json"), JSON.stringify({ tests: { total: 416358, fail: 0 }, sizes, benchmark }, null, 2) + "\n")
 await writeFile(resolve(output, ".nojekyll"), "")
 console.log(`built GitHub Pages site at ${output}`)
+
+// Refuse publication if source or served artifacts drift from this measurement.
+await import("./build-audit.mjs").then(({writeAudit}) => writeAudit({root, output}));

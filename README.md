@@ -1,5 +1,9 @@
 # @itslil/cn
 
+<!-- current-build-audit -->
+**Build audit, 2026-09-10:** [verified; compiler, machine, build times, version gaps and behavior checks](https://yeargun.github.io/cnlil/#build-audit). The [JSON receipt](site/build-audit.json) records the current comparison; older benchmark prose retains its original scope.
+
+
 The default runtime from [`cn@0.2.4`](https://github.com/shadcn-ui/cn) rewritten in LilScript, pinned to upstream commit `c003999e2456266c1b0e9d8ed4e2ca855d5eb38f`. It preserves the upstream radix trie, span validators, conflict pass, doorkeeper, two-generation string cache, argument cache, and joining behavior. Not affiliated with upstream.
 
 **Evidence site:** [yeargun.github.io/cnlil](https://yeargun.github.io/cnlil/)

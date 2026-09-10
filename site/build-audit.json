@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "name": "cnlil",
+  "measuredAt": "2026-09-10T13:56:40Z",
+  "status": "verified",
+  "buildPassed": true,
+  "summary": "The fresh artifact was checked against the repository test command.",
+  "sourceCommit": "76a975fdbfdcd4b07752bb6462510bcc8a359812",
+  "previousPublicCommit": "76a975fdbfdcd4b07752bb6462510bcc8a359812",
+  "compiler": {
+    "commit": "63c2896a71e60cbcca7870fe979f9d6ecaff3452",
+    "sha256": "2319462ef7d858c8e2a5a767260aa4f80d325e0045afa0cc86cc122d1299b059",
+    "profile": "release",
+    "dirty": false
+  },
+  "machine": {
+    "cpu": "AMD EPYC 9V45 96-Core Processor",
+    "logicalCpus": 16,
+    "affinityCpus": 16,
+    "memoryBytes": 33648435200,
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.17.0-1022-azure",
+    "architecture": "x86_64",
+    "node": "v22.23.2",
+    "rayonThreads": 16,
+    "provider": "Azure",
+    "instanceClass": "Standard_D16als_v7",
+    "parallelPortBuildsOnMachine": 1,
+    "loadAtStart": [
+      9.08837890625,
+      2.55419921875,
+      0.87451171875
+    ],
+    "loadAtEnd": [
+      8.9404296875,
+      3.0546875,
+      1.08642578125
+    ],
+    "concurrencyNote": "The audit scheduled one port per worker, but this is a shared pool. Outside compiler jobs were observed during the run; timings are contextual wall times, not controlled speedup benchmarks."
+  },
+  "upstream": {
+    "name": "cnlil",
+    "package": "cn",
+    "pinned": "0.2.4",
+    "latest": "0.2.6",
+    "source": "https://www.npmjs.com/package/cn"
+  },
+  "comparisonScope": "cn@0.2.4 public ESM runtime graph; dependency installation excluded; this is a comparison bundle build, not the upstream vendor release pipeline Sizes use canonical zlib 1.3.1 gzip-9 and Google Brotli 1.1.0 quality 11.",
+  "sizes": {
+    "previous": {
+      "raw": 26788,
+      "gzip9": 10713,
+      "brotli11": 9443
+    },
+    "current": {
+      "path": "dist/index.js",
+      "raw": 26761,
+      "gzip9": 10589,
+      "brotli11": 9304,
+      "sha256": "3cf068d540137ed0e623b5d57700abc9df48bc80829f385e3d8592d4bdbf53e9"
+    },
+    "upstream": {
+      "path": ".page-audit/upstream/official.esm.js",
+      "raw": 27004,
+      "gzip9": 10560,
+      "brotli11": 9394,
+      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+    }
+  },
+  "officialArtifacts": [
+    {
+      "path": ".page-audit/upstream/official.terser-nomangle.js",
+      "raw": 34777,
+      "gzip9": 11965,
+      "brotli11": 10871,
+      "sha256": "359f2f41a232cd5fa0cbb33f56315067162fea0d2db46f2b531f0d45c2c2f35f"
+    },
+    {
+      "path": ".page-audit/upstream/official.esm.js",
+      "raw": 27004,
+      "gzip9": 10560,
+      "brotli11": 9394,
+      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+    },
+    {
+      "path": ".page-audit/upstream/official.unminified.js",
+      "raw": 47707,
+      "gzip9": 13354,
+      "brotli11": 11979,
+      "sha256": "26b8d13bbec951e3282661e855264a8e615e53b499ab69f043b49af7466c5697"
+    },
+    {
+      "path": ".page-audit/upstream/official.esbuild.js",
+      "raw": 27849,
+      "gzip9": 10940,
+      "brotli11": 9842,
+      "sha256": "75546a563822dd0788d790af3892dee8ebe01cf617ee72f2b06b6120f18281a7"
+    }
+  ],
+  "candidateArtifacts": [
+    {
+      "path": "dist/index.cjs",
+      "raw": 26829,
+      "gzip9": 10626,
+      "brotli11": 9341,
+      "sha256": "1e93a974d068fe5681a0fa469c839f35a19a119099adfdccd56fdab71ee4ecff"
+    },
+    {
+      "path": "dist/lite.cjs",
+      "raw": 267,
+      "gzip9": 217,
+      "brotli11": 162,
+      "sha256": "24fe478e2a99fa1ada0b19b2198e70159509b87e1fd0f7ffd6f580358bef3c53"
+    },
+    {
+      "path": "dist/lite.raw.js",
+      "raw": 208,
+      "gzip9": 174,
+      "brotli11": 128,
+      "sha256": "419bfa67c010efabae7dbf2e78066faa2d9489bfc8680171163ece1572c33a4c"
+    },
+    {
+      "path": "dist/index.js",
+      "raw": 26761,
+      "gzip9": 10589,
+      "brotli11": 9304,
+      "sha256": "3cf068d540137ed0e623b5d57700abc9df48bc80829f385e3d8592d4bdbf53e9"
+    },
+    {
+      "path": "dist/cn.raw.js",
+      "raw": 26760,
+      "gzip9": 10585,
+      "brotli11": 9315,
+      "sha256": "de488faf0bd2f0db2a5a4c3a76770b8819b562ca5059254b9df414c0ec189e56"
+    },
+    {
+      "path": "dist/lite.js",
+      "raw": 209,
+      "gzip9": 176,
+      "brotli11": 130,
+      "sha256": "a76dfb0cd3656a712b4ee8e1f20055df15f315dd2db3fc318c177426fc1a17e0"
+    },
+    {
+      "path": ".page-audit/upstream/official.esbuild.js",
+      "raw": 27849,
+      "gzip9": 10940,
+      "brotli11": 9842,
+      "sha256": "75546a563822dd0788d790af3892dee8ebe01cf617ee72f2b06b6120f18281a7"
+    },
+    {
+      "path": ".page-audit/upstream/official.terser-nomangle.js",
+      "raw": 34777,
+      "gzip9": 11965,
+      "brotli11": 10871,
+      "sha256": "359f2f41a232cd5fa0cbb33f56315067162fea0d2db46f2b531f0d45c2c2f35f"
+    },
+    {
+      "path": ".page-audit/upstream/official.unminified.js",
+      "raw": 47707,
+      "gzip9": 13354,
+      "brotli11": 11979,
+      "sha256": "26b8d13bbec951e3282661e855264a8e615e53b499ab69f043b49af7466c5697"
+    },
+    {
+      "path": ".page-audit/upstream/official.esm.js",
+      "raw": 27004,
+      "gzip9": 10560,
+      "brotli11": 9394,
+      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c"
+    }
+  ],
+  "timing": {
+    "primaryCompilerSeconds": 15.901054382324219,
+    "primaryScope": "One real compiler process, including code generation and codec-guided search; excludes subsequent package wrapping.",
+    "packageSeconds": 16.261446692999925,
+    "packageScope": "node scripts/build.mjs --compile --force; 2 successful compiler invocations plus package generation.",
+    "upstreamSeconds": 0.13681263600000002,
+    "upstreamScope": "cn@0.2.4 public ESM runtime graph; dependency installation excluded; this is a comparison bundle build, not the upstream vendor release pipeline",
+    "protocol": "Same shared worker for both lanes; one fresh LilScript package build; median of three sequential upstream ESM builds (PlayCanvas records one native reference build). Outside compiler jobs were observed in the pool, so contention is not excluded. Dependencies, tests and compression measurement are outside these build times.",
+    "upstreamSamples": [
+      {
+        "bundleSeconds": 0.005231535000000008,
+        "wallSeconds": 0.18928319600000001
+      },
+      {
+        "bundleSeconds": 0.006452739999999978,
+        "wallSeconds": 0.13681263600000002
+      },
+      {
+        "bundleSeconds": 0.003807287999999971,
+        "wallSeconds": 0.08725561199999998
+      }
+    ]
+  },
+  "behavior": {
+    "command": "node scripts/test-upstream.mjs",
+    "summary": "Repository test command passed (exit 0). ",
+    "before": {
+      "exitCode": 0,
+      "failures": [],
+      "logSha256": "48bc2d77d22029eebaf4b9b3639794198f2c10c35e895ea85356ad1db488f7e1"
+    },
+    "after": {
+      "exitCode": 0,
+      "failures": [],
+      "tail": "pass: 56353  fail: 0  (100.000%)\nidempotence failures: 0, cached/uncached mismatches: 0, cn-join failures: 0\nfuzz: 300000 cases, 0 mismatches\njoin: pass 60005  fail 0\n",
+      "logSha256": "48bc2d77d22029eebaf4b9b3639794198f2c10c35e895ea85356ad1db488f7e1"
+    }
+  },
+  "findings": [
+    "Published-to-fresh Brotli drift: -139 bytes (-1.47%). This includes port source/config changes and compiler changes.",
+    "Upstream version gap: pinned 0.2.4; npm latest was 0.2.6 at the audit. No compatibility upgrade is implied."
+  ],
+  "primaryArtifact": "dist/index.js",
+  "beforePage": {
+    "url": "https://yeargun.github.io/cnlil/",
+    "status": 200,
+    "sha256": "5d52480e9ce0af47bf91c4c60bf8964d2331487af689e8251a488c81f5104e74",
+    "lastModified": "Thu, 03 Sep 2026 13:05:21 GMT"
+  },
+  "codecSha256": "9257fd055728895c11b9c4b0d882895d7d11bb3dd3495f560123879ca2bc3cd6",
+  "publicationArtifacts": [
+    {
+      "path": "dist/index.cjs",
+      "sha256": "1e93a974d068fe5681a0fa469c839f35a19a119099adfdccd56fdab71ee4ecff"
+    },
+    {
+      "path": "dist/lite.cjs",
+      "sha256": "24fe478e2a99fa1ada0b19b2198e70159509b87e1fd0f7ffd6f580358bef3c53"
+    },
+    {
+      "path": "dist/index.js",
+      "sha256": "3cf068d540137ed0e623b5d57700abc9df48bc80829f385e3d8592d4bdbf53e9"
+    },
+    {
+      "path": "dist/lite.js",
+      "sha256": "a76dfb0cd3656a712b4ee8e1f20055df15f315dd2db3fc318c177426fc1a17e0"
+    }
+  ],
+  "publicationPolicy": "Promote freshly tested distribution",
+  "publicationBase": "76a975fdbfdcd4b07752bb6462510bcc8a359812",
+  "publicationSourceFingerprint": "4d75fdb1bd1b4f192cb4dcc0db539366ec1afd06e912fe12cf827ec8451cbd97"
+}
