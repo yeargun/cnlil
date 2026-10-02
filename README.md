@@ -45,7 +45,7 @@ The LilScript compiler is expected at `../lilscript`.
 
 ```sh
 npm ci
-npm test
+npm run test:build
 npm run bench
 npm run measure
 npm run check:site
@@ -63,3 +63,9 @@ npm run check:site
 - `site/` — the shared evidence-lab GitHub Pages presentation
 
 MIT. See [NOTICE.md](NOTICE.md) for attribution.
+
+### Running the checks
+
+`npm run test:build` builds the package and runs its tests. After an explicit
+`npm run build`, use `npm test` to test those artifacts without rebuilding them.
+This also keeps the development and production files available to the same suite.

@@ -67,12 +67,13 @@
   "scripts": {
     "generate:tables": "node scripts/generate-tables.mjs",
     "build": "node scripts/build.mjs --compile",
-    "test": "npm run build && node scripts/test-upstream.mjs",
+    "test": "node scripts/test-upstream.mjs",
     "bench": "node scripts/bench.mjs",
     "measure": "node scripts/measure.mjs",
     "build:site": "node scripts/build-site.mjs",
     "check:site": "npm run build:site && node --test test/site.test.mjs",
-    "prepublishOnly": "npm test && npm run check:site"
+    "prepublishOnly": "npm run test:build && npm run check:site",
+    "test:build": "npm run build && npm test"
   },
   "devDependencies": {
     "clsx": "2.1.1",
