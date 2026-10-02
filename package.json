@@ -19,9 +19,18 @@
   },
   "license": "MIT",
   "author": "yeargun",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/cn.raw.js",
+    "./dist/index.cjs",
+    "./dist/index.js",
+    "./dist/lite.cjs",
+    "./dist/lite.js",
+    "./dist/lite.raw.js"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -52,7 +61,9 @@
     "NOTICE.md",
     "README.md"
   ],
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "generate:tables": "node scripts/generate-tables.mjs",
     "build": "node scripts/build.mjs --compile",

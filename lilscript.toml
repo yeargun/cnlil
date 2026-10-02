@@ -1,38 +1,40 @@
+# Compiler-owned delivery; no JavaScript post-minifier or export rewriting.
+[policy]
+version = 3
 [package]
 name = "cnlil"
 version = "0.2.4"
 abi = 1
 entry = "src/index.lil"
-
 [optimization]
 preset = "maximum"
 call_site_specialization = true
-identical_function_folding = true
-
 [javascript]
 priority = "size-first"
-optimization_level = 13
-cost_model = "brotli"
-public_aggregate_abi = "positional"
+# Assumes unpatched platform builtins; disable when consumers replace them.
 assume_pristine_builtins = true
-strip_console = true
-pool_numeric_literals = true
-candidate_search = "production"
-candidate_limit = 1536
-candidate_byte_budget = 1048576
-candidate_beam_width = 12
-local_name_reserve = 48
-stable_local_names = true
-function_spelling = "function"
-# finer 048: this port is held to upstream parity on every lane of its own benchmark
-function_scope = true # internals in one function scope: V8 context slots, not module cells
-truthy_nullable_checks = false # a class test as `!=null`, not truthiness (3.2 ns against 3.8)
+# Remove debugLog instrumentation; ordinary print and host console effects remain.
+strip_debug = true
 
+# Preserved effort setting. 13 favors size; 14/15 allow more expensive marginal searches.
+[effort]
+level = 13
+
+# Optimize the delivered files for this codec, independently of raw/gzip objectives.
+[objective]
+codecs = "brotli"
 [mangle]
 identifiers = true
 properties = false
-exports = false
 pool_strings = true
-
-[bundle]
+[delivery]
 mode = "single"
+directory = "."
+entry_names = "[name].js"
+[delivery.entries]
+index = "src/index.lil"
+lite = "src/lite.lil"
+[[delivery.also]]
+name = "cjs"
+format = "cjs"
+entry_names = "[name].cjs"
