@@ -1,0 +1,91 @@
+[
+  {
+    "id": "@itslil/cn@0.2.4",
+    "name": "@itslil/cn",
+    "version": "0.2.4",
+    "size": 33608,
+    "unpackedSize": 129374,
+    "shasum": "eee3dd0bc400a03ea7e95c2d99e7d9f4f7110233",
+    "integrity": "sha512-gVuWCloPz2P+IV4SxNhEYMdzQ3PVDragjZ+LqGaQTeBK7GcTQCqjRG/p0/ApYgMuwyMgXqwoIatopNvpzNoyCA==",
+    "filename": "itslil-cn-0.2.4.tgz",
+    "files": [
+      {
+        "path": "LICENSE",
+        "size": 1064,
+        "mode": 420
+      },
+      {
+        "path": "NOTICE.md",
+        "size": 523,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 3383,
+        "mode": 420
+      },
+      {
+        "path": "dist/index.cjs",
+        "size": 27247,
+        "mode": 420
+      },
+      {
+        "path": "dist/index.d.ts",
+        "size": 651,
+        "mode": 420
+      },
+      {
+        "path": "dist/index.js",
+        "size": 26997,
+        "mode": 420
+      },
+      {
+        "path": "dist/lite.cjs",
+        "size": 404,
+        "mode": 420
+      },
+      {
+        "path": "dist/lite.d.ts",
+        "size": 128,
+        "mode": 420
+      },
+      {
+        "path": "dist/lite.js",
+        "size": 197,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 2100,
+        "mode": 420
+      },
+      {
+        "path": "src/default.lil",
+        "size": 11473,
+        "mode": 420
+      },
+      {
+        "path": "src/engine.lil",
+        "size": 37467,
+        "mode": 420
+      },
+      {
+        "path": "src/index.lil",
+        "size": 98,
+        "mode": 420
+      },
+      {
+        "path": "src/lite.lil",
+        "size": 460,
+        "mode": 420
+      },
+      {
+        "path": "src/tables.lil",
+        "size": 17182,
+        "mode": 420
+      }
+    ],
+    "entryCount": 15,
+    "bundled": []
+  }
+]

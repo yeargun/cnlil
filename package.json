@@ -19,9 +19,18 @@
   },
   "license": "MIT",
   "author": "yeargun",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/cn.raw.js",
+    "./dist/index.cjs",
+    "./dist/index.js",
+    "./dist/lite.cjs",
+    "./dist/lite.js",
+    "./dist/lite.raw.js"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -52,16 +61,19 @@
     "NOTICE.md",
     "README.md"
   ],
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "generate:tables": "node scripts/generate-tables.mjs",
     "build": "node scripts/build.mjs --compile",
-    "test": "npm run build && node scripts/test-upstream.mjs",
+    "test": "node scripts/test-upstream.mjs",
     "bench": "node scripts/bench.mjs",
     "measure": "node scripts/measure.mjs",
     "build:site": "node scripts/build-site.mjs",
     "check:site": "npm run build:site && node --test test/site.test.mjs",
-    "prepublishOnly": "npm test && npm run check:site"
+    "prepublishOnly": "npm run test:build && npm run check:site",
+    "test:build": "npm run build && npm test"
   },
   "devDependencies": {
     "clsx": "2.1.1",

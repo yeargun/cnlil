@@ -1,176 +1,248 @@
 {
-  "schemaVersion": 2,
-  "measuredAt": "2026-09-10T20:38:54Z",
+  "schemaVersion": 4,
   "name": "cnlil",
+  "package": "@itslil/cn",
+  "measuredAt": "2026-10-03T18:02:15.863691+03:00",
   "compiler": {
-    "commit": "4dc4e3337d9ffd758d65e3852682d6e13d9331c1",
-    "sha256": "0616048498eb9eb2e4bd75b39e8e6a083733ada647e16108edfee30ad183beeb"
+    "baseRevision": "f7d29bd9",
+    "binarySha256": "8ff44fabb92c949e68240ce6541038fd52e2f3c04d1a9ac470031e4238541c3a",
+    "hasLocalSourceChanges": true
   },
   "upstream": {
     "package": "cn",
     "version": "0.2.4",
-    "repository": "https://github.com/shadcn-ui/cn.git",
-    "commit": "989c25ecfaed76dcf05e1f9996b6dfcbed157d7f"
-  },
-  "scope": "cn@0.2.4 public ESM runtime graph. Original ESM assembled from the pinned Git source build.",
-  "compatibility": "Repository checks completed successfully.",
-  "tests": null,
-  "buildComplete": true,
-  "machine": {
-    "provider": "Azure",
-    "instanceClass": "Standard_D16als_v7",
-    "cpu": "AMD EPYC 9V45 96-Core Processor",
-    "logicalCpus": 16,
-    "memoryBytes": 33648435200,
-    "os": "Ubuntu 24.04.4 LTS",
-    "kernel": "6.17.0-1022-azure",
-    "node": "v24.11.1",
-    "rayonThreads": 8,
-    "loadAtStart": [
-      1.63525390625,
-      2.25146484375,
-      2.59423828125
+    "external": [],
+    "sharedExports": [
+      "clsx",
+      "cn",
+      "twJoin",
+      "twMerge"
     ],
-    "loadAtEnd": [
-      3.4423828125,
-      2.7138671875,
-      2.736328125
+    "excludedExports": [
+      "createEngine"
+    ],
+    "additionalExports": [],
+    "resolution": {
+      "platform": "neutral",
+      "conditions": [
+        "production"
+      ],
+      "mainFields": [
+        "module",
+        "main"
+      ],
+      "target": "es2020",
+      "defines": {
+        "process.env.NODE_ENV": "production"
+      },
+      "css": "excluded; measured JavaScript only"
+    }
+  },
+  "scope": "Default cn class-merging runtime with its data tables. The original and candidate expose matching cn, clsx, twJoin and twMerge entry names. Custom-config compiler, CLI and public engine construction are outside this boundary.",
+  "machine": {
+    "cpu": "AMD EPYC 7763 64-Core Processor",
+    "logicalCpus": 8,
+    "memoryGiB": 15.6,
+    "os": "Linux-7.0.0-1014-azure-x86_64-with-glibc2.39",
+    "node": "v20.19.0"
+  },
+  "objectives": [
+    {
+      "objective": "raw",
+      "metric": "raw",
+      "lilscript": {
+        "artifact": "./comparison-artifacts/lilscript-raw.mjs",
+        "sizes": {
+          "raw": 26427,
+          "gzip9": 10550,
+          "brotli11": 9296
+        },
+        "sha256": "43f7567306f0d13d5f612a29bd1b03aa1f6b708290c13289b0c41298a25fdc5c",
+        "buildSeconds": 14.595012327001314,
+        "config": "./comparison-artifacts/lilscript-raw.toml",
+        "configSha256": "041c556a85b9898904efacabef7d03c3f51b5e31c106ec81e0dd4e75586e2b99"
+      },
+      "original": {
+        "tool": "Oxc",
+        "version": "via Vite 8.2.1",
+        "artifact": "./comparison-artifacts/original-oxc.mjs",
+        "sizes": {
+          "raw": 26617,
+          "gzip9": 10493,
+          "brotli11": 9288
+        },
+        "sha256": "e40604dc81c0bcb2331429be97d383525b62f3b781b508170c7658938356dfc2",
+        "buildSeconds": 0.1808057969999936
+      },
+      "ratio": 0.9928617049254236
+    },
+    {
+      "objective": "gzip",
+      "metric": "gzip9",
+      "lilscript": {
+        "artifact": "./comparison-artifacts/lilscript-gzip.mjs",
+        "sizes": {
+          "raw": 26682,
+          "gzip9": 10431,
+          "brotli11": 9251
+        },
+        "sha256": "9ac32c4b4d04cf3bbd2fce0a155ab5b3aabaab4b29371989ee771be04d395c9e",
+        "buildSeconds": 9.079999442008557,
+        "config": "./comparison-artifacts/lilscript-gzip.toml",
+        "configSha256": "68cdc6ccfd4df7255ed460591c53f7cafcd032cd1cffde86c95d6c5d469a5e4f"
+      },
+      "original": {
+        "tool": "Oxc",
+        "version": "via Vite 8.2.1",
+        "artifact": "./comparison-artifacts/original-oxc.mjs",
+        "sizes": {
+          "raw": 26617,
+          "gzip9": 10493,
+          "brotli11": 9288
+        },
+        "sha256": "e40604dc81c0bcb2331429be97d383525b62f3b781b508170c7658938356dfc2",
+        "buildSeconds": 0.1808057969999936
+      },
+      "ratio": 0.9940912989612123
+    },
+    {
+      "objective": "brotli",
+      "metric": "brotli11",
+      "lilscript": {
+        "artifact": "./comparison-artifacts/lilscript-brotli.mjs",
+        "sizes": {
+          "raw": 26997,
+          "gzip9": 10568,
+          "brotli11": 9262
+        },
+        "sha256": "7df39fe964052be58a82ce4752358b3e4ce09cec35c25675db5e2b9750b53431",
+        "buildSeconds": 12.988557689997833,
+        "config": "./comparison-artifacts/lilscript-brotli.toml",
+        "configSha256": "a36e6f4803e7d5c703585546a936b8fa98892377dbb3469ab7424e6c2f628d76"
+      },
+      "original": {
+        "tool": "Oxc",
+        "version": "via Vite 8.2.1",
+        "artifact": "./comparison-artifacts/original-oxc.mjs",
+        "sizes": {
+          "raw": 26617,
+          "gzip9": 10493,
+          "brotli11": 9288
+        },
+        "sha256": "e40604dc81c0bcb2331429be97d383525b62f3b781b508170c7658938356dfc2",
+        "buildSeconds": 0.1808057969999936
+      },
+      "ratio": 0.9972006890611542
+    }
+  ],
+  "minifiers": [
+    {
+      "tool": "Terser",
+      "version": "5.51.2",
+      "artifact": "./comparison-artifacts/original-terser.mjs",
+      "sizes": {
+        "raw": 26985,
+        "gzip9": 10545,
+        "brotli11": 9403
+      },
+      "sha256": "f65fb379172c08318987e59067c97d728bada595ac1a7dcadf87ee5328b955b8",
+      "buildSeconds": 0.4949445279999927
+    },
+    {
+      "tool": "esbuild",
+      "version": "0.28.1",
+      "artifact": "./comparison-artifacts/original-esbuild.mjs",
+      "sizes": {
+        "raw": 27830,
+        "gzip9": 10930,
+        "brotli11": 9848
+      },
+      "sha256": "bf6fc0688466bb1a322990e3fd7ffac3de1adfa69c884cc5fef60ed2e1da7140",
+      "buildSeconds": 0.06411814900000172
+    },
+    {
+      "tool": "Oxc",
+      "version": "via Vite 8.2.1",
+      "artifact": "./comparison-artifacts/original-oxc.mjs",
+      "sizes": {
+        "raw": 26617,
+        "gzip9": 10493,
+        "brotli11": 9288
+      },
+      "sha256": "e40604dc81c0bcb2331429be97d383525b62f3b781b508170c7658938356dfc2",
+      "buildSeconds": 0.1808057969999936
+    }
+  ],
+  "validation": {
+    "checks": 1249074,
+    "runs": [
+      {
+        "objective": "raw",
+        "suite": "cn",
+        "checks": 416358,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ],
+        "artifact": "/home/azureuser/lilscript-rebuild-reports/2026-10-03-site-refresh/validation/raw/cnlil/dist/index.mjs",
+        "ok": true
+      },
+      {
+        "objective": "gzip",
+        "suite": "cn",
+        "checks": 416358,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ],
+        "artifact": "/home/azureuser/lilscript-rebuild-reports/2026-10-03-site-refresh/validation/gzip/cnlil/dist/index.mjs",
+        "ok": true
+      },
+      {
+        "objective": "brotli",
+        "suite": "cn",
+        "checks": 416358,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ],
+        "artifact": "/home/azureuser/lilscript-rebuild-reports/2026-10-03-site-refresh/validation/brotli/cnlil/dist/index.mjs",
+        "ok": true
+      }
+    ],
+    "ok": true,
+    "scope": "Current independent main-entry builds; package-format tests are recorded separately."
+  },
+  "originalValidation": {
+    "checks": 1249074,
+    "runs": [
+      {
+        "minifier": "terser",
+        "checks": 416358,
+        "ok": true,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ]
+      },
+      {
+        "minifier": "esbuild",
+        "checks": 416358,
+        "ok": true,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ]
+      },
+      {
+        "minifier": "oxc",
+        "checks": 416358,
+        "ok": true,
+        "command": [
+          "node",
+          "scripts/test-upstream.mjs"
+        ]
+      }
     ]
-  },
-  "build": {
-    "compilerSeconds": null,
-    "packageSeconds": 15.340992925999672,
-    "originalSeconds": 1.1659316209997996,
-    "originalEsmSeconds": 0.094087909,
-    "packageScope": "node scripts/build.mjs --compile --force",
-    "originalScope": "corepack pnpm --filter cn build",
-    "protocol": {
-      "repetitions": 3,
-      "cleanOutputs": true,
-      "dependencyInstallationTimedSeparately": true,
-      "sourceArchives": "Pinned Git checkouts; original repository package build commands, followed by production ESM assembly.",
-      "workerUse": "Both implementations use the same machine and Node version. This shared build pool also runs unrelated jobs; timings are contextual wall times, with CPU time recorded separately."
-    }
-  },
-  "esm": {
-    "lilscript": {
-      "raw": 26761,
-      "gzip9": 10589,
-      "brotli11": 9304,
-      "sha256": "3cf068d540137ed0e623b5d57700abc9df48bc80829f385e3d8592d4bdbf53e9",
-      "file": "./esm-comparison/lilscript.js"
-    },
-    "original": {
-      "raw": 27004,
-      "gzip9": 10560,
-      "brotli11": 9394,
-      "sha256": "7ce949f21b1deae2a7a168aaf48e06532a034683ae9043322366e721862b7b8c",
-      "file": "./esm-comparison/original.js"
-    }
-  },
-  "sourceBuild": {
-    "original": {
-      "complete": true,
-      "medianSeconds": 1.1659316209997996,
-      "minimumSeconds": 1.1659089560007487,
-      "maximumSeconds": 1.3162138890002097,
-      "samples": [
-        {
-          "command": [
-            "corepack",
-            "pnpm",
-            "--filter",
-            "cn",
-            "build"
-          ],
-          "wallSeconds": 1.3162138890002097,
-          "cpuSeconds": 2.100032999999999,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "original-build-1.log",
-          "logSha256": "5b6d8ffa32e8361c4c64465d7865665648b0b8848bfc60f2d1cc80907f2d1bda"
-        },
-        {
-          "command": [
-            "corepack",
-            "pnpm",
-            "--filter",
-            "cn",
-            "build"
-          ],
-          "wallSeconds": 1.1659316209997996,
-          "cpuSeconds": 1.983808999999999,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "original-build-2.log",
-          "logSha256": "c4e70ef12006533c3d46b7ff741b53e63d33c21f6328e474e6fc7ede27bfed35"
-        },
-        {
-          "command": [
-            "corepack",
-            "pnpm",
-            "--filter",
-            "cn",
-            "build"
-          ],
-          "wallSeconds": 1.1659089560007487,
-          "cpuSeconds": 2.0322410000000004,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "original-build-3.log",
-          "logSha256": "52bab67c42eba627d5f20a4cb56130bacdd5643c5503900afd483fed87406d2b"
-        }
-      ]
-    },
-    "lilscript": {
-      "complete": true,
-      "medianSeconds": 15.340992925999672,
-      "minimumSeconds": 15.340642049999587,
-      "maximumSeconds": 15.341352099000687,
-      "samples": [
-        {
-          "command": [
-            "bash",
-            "-c",
-            "node scripts/build.mjs --compile --force"
-          ],
-          "wallSeconds": 15.340992925999672,
-          "cpuSeconds": 51.44894899999999,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "lilscript-build-1.log",
-          "logSha256": "fead95f606ece68a84bd48d95f5118a51b9d53a5213caab7ef011b16b254291b"
-        },
-        {
-          "command": [
-            "bash",
-            "-c",
-            "node scripts/build.mjs --compile --force"
-          ],
-          "wallSeconds": 15.340642049999587,
-          "cpuSeconds": 51.42917000000001,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "lilscript-build-2.log",
-          "logSha256": "fead95f606ece68a84bd48d95f5118a51b9d53a5213caab7ef011b16b254291b"
-        },
-        {
-          "command": [
-            "bash",
-            "-c",
-            "node scripts/build.mjs --compile --force"
-          ],
-          "wallSeconds": 15.341352099000687,
-          "cpuSeconds": 51.413865,
-          "exitCode": 0,
-          "timedOut": false,
-          "log": "lilscript-build-3.log",
-          "logSha256": "fead95f606ece68a84bd48d95f5118a51b9d53a5213caab7ef011b16b254291b"
-        }
-      ]
-    },
-    "scopeNote": "Both timings cover each repository\u2019s package build command; their output formats and build checks can differ.",
-    "cleanOutputs": true,
-    "installationExcluded": true
   }
 }

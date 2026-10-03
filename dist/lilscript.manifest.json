@@ -1,0 +1,247 @@
+{
+  "version": 5,
+  "outputs": [
+    {
+      "mode": "single",
+      "format": "esm",
+      "entries": [
+        {
+          "name": "index",
+          "file": "index.js",
+          "dynamic": false,
+          "closure": [
+            "index.js"
+          ],
+          "row": 9262,
+          "raw_row": 26997
+        },
+        {
+          "name": "lite",
+          "file": "lite.js",
+          "dynamic": false,
+          "closure": [
+            "lite.js"
+          ],
+          "row": 137,
+          "raw_row": 197
+        }
+      ],
+      "files": [
+        {
+          "file": "index.js",
+          "role": "entry",
+          "source_map_for": null,
+          "label": [
+            "index"
+          ],
+          "modules": [
+            "default.lil",
+            "engine.lil",
+            "tables.lil"
+          ],
+          "anchored": true,
+          "imports": [],
+          "dynamic_imports": [],
+          "bytes": 26997,
+          "codec_bytes": 9262,
+          "sha256": "7df39fe964052be58a82ce4752358b3e4ce09cec35c25675db5e2b9750b53431"
+        },
+        {
+          "file": "lite.js",
+          "role": "entry",
+          "source_map_for": null,
+          "label": [
+            "lite"
+          ],
+          "modules": [
+            "lite.lil"
+          ],
+          "anchored": true,
+          "imports": [],
+          "dynamic_imports": [],
+          "bytes": 197,
+          "codec_bytes": 137,
+          "sha256": "e9826faaefe8b7c03ea4e376052823b928c3d66cd8584dda962a8961c0082229"
+        }
+      ],
+      "side_effects": [
+        "index.js",
+        "lite.js"
+      ],
+      "codec_total": 9399,
+      "rows_total": 9399,
+      "setters": 0,
+      "output": "public/primary",
+      "codec": "brotli",
+      "codec_settings": {
+        "brotli": {
+          "quality": 11,
+          "window": 22,
+          "mode": "generic"
+        },
+        "gzip": {
+          "level": 9,
+          "window": 15
+        }
+      },
+      "policy_fingerprint": [
+        254,
+        233,
+        233,
+        153,
+        176,
+        135,
+        220,
+        156,
+        4,
+        150,
+        204,
+        213,
+        154,
+        228,
+        176,
+        216,
+        65,
+        31,
+        66,
+        227,
+        249,
+        116,
+        176,
+        54,
+        4,
+        160,
+        64,
+        120,
+        97,
+        166,
+        210,
+        2
+      ]
+    },
+    {
+      "mode": "single",
+      "format": "cjs",
+      "entries": [
+        {
+          "name": "index",
+          "file": "index.cjs",
+          "dynamic": false,
+          "closure": [
+            "index.cjs"
+          ],
+          "row": 9337,
+          "raw_row": 27247
+        },
+        {
+          "name": "lite",
+          "file": "lite.cjs",
+          "dynamic": false,
+          "closure": [
+            "lite.cjs"
+          ],
+          "row": 212,
+          "raw_row": 404
+        }
+      ],
+      "files": [
+        {
+          "file": "index.cjs",
+          "role": "entry",
+          "source_map_for": null,
+          "label": [
+            "index"
+          ],
+          "modules": [
+            "default.lil",
+            "engine.lil",
+            "tables.lil"
+          ],
+          "anchored": true,
+          "imports": [],
+          "dynamic_imports": [],
+          "bytes": 27247,
+          "codec_bytes": 9337,
+          "sha256": "9a29499a878156ed6c79822a94b6db939ead69a82725adf58f09b699ed9c4c71"
+        },
+        {
+          "file": "lite.cjs",
+          "role": "entry",
+          "source_map_for": null,
+          "label": [
+            "lite"
+          ],
+          "modules": [
+            "lite.lil"
+          ],
+          "anchored": true,
+          "imports": [],
+          "dynamic_imports": [],
+          "bytes": 404,
+          "codec_bytes": 212,
+          "sha256": "2d4c02df659fb301a8c5f73b72db37927e3c055e6ee2364a29dee228d10c80b4"
+        }
+      ],
+      "side_effects": [
+        "index.cjs",
+        "lite.cjs"
+      ],
+      "codec_total": 9549,
+      "rows_total": 9549,
+      "setters": 0,
+      "output": "public/cjs",
+      "codec": "brotli",
+      "codec_settings": {
+        "brotli": {
+          "quality": 11,
+          "window": 22,
+          "mode": "generic"
+        },
+        "gzip": {
+          "level": 9,
+          "window": 15
+        }
+      },
+      "policy_fingerprint": [
+        104,
+        7,
+        150,
+        133,
+        142,
+        144,
+        152,
+        64,
+        22,
+        21,
+        74,
+        237,
+        182,
+        190,
+        194,
+        74,
+        71,
+        188,
+        215,
+        49,
+        119,
+        232,
+        220,
+        203,
+        163,
+        175,
+        79,
+        100,
+        197,
+        168,
+        205,
+        19
+      ]
+    }
+  ],
+  "aliases": {
+    "cn.raw.js": "index.js",
+    "lite.raw.js": "lite.js"
+  },
+  "providers": [],
+  "source_sha256": "ea994f3a0ce708ba8ba9737078d26d196e40b262842e47de659dab6b3b6ee831"
+}

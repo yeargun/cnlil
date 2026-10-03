@@ -1,39 +1,8 @@
-const data = await fetch("./results.json").then((response) => response.json())
-const lil = await import("./cn.js")
-const official = await import("./official.js")
-const format = new Intl.NumberFormat("en-US")
-const ratio = (value) => `${value.toFixed(2)}×`
-const ns = (value) => value >= 1000 ? `${(value / 1000).toFixed(2)} µs` : `${value.toFixed(1)} ns`
-
-const warm = data.benchmark.rows.find((row) => row.kind === "merge" && row.workload === "short")
-const component = data.benchmark.rows.find((row) => row.kind === "component" && row.workload === "single")
-document.querySelector("#hero-tests").innerHTML = `${format.format(data.tests.total)}<span>matching</span>`
-document.querySelector("#hero-status").textContent = `${format.format(data.tests.fail)} differential mismatches`
-document.querySelector("#hero-warm").textContent = ratio(warm.ratio)
-document.querySelector("#hero-component").textContent = ratio(component.ratio)
-document.querySelector("#hero-brotli").textContent = ratio(data.sizes.ratio.brotli11)
-
-const cards = [
-  ["warm recurring strings", warm],
-  ["component call", component],
-  ["cold arbitrary values", data.benchmark.rows.find((row) => row.workload === "arb")],
-  ["differential cases", { ratio: 1, lilNs: data.tests.total }],
-]
-document.querySelector("#perf-cards").innerHTML = cards.map(([label, row], index) =>
-  `<article class="perf-card ${row.ratio <= 1 ? "win" : ""} ${index === 3 ? "geo" : ""}"><strong>${index === 3 ? format.format(row.lilNs) : ratio(row.ratio)}</strong><span>${label}</span></article>`
-).join("")
-const spread = (row) => row.ratioLow == null ? "" : `<span class="range">${row.ratioLow.toFixed(2)}–${row.ratioHigh.toFixed(2)}</span>`
-document.querySelector("#perf-body").innerHTML = data.benchmark.rows.map((row) =>
-  `<tr><th>${row.kind}: ${row.workload}</th><td>${ns(row.lilNs)}</td><td>${ns(row.officialNs)}</td><td class="verdict ${row.ratio <= 1.0 ? "win" : "loss"}"><strong>${ratio(row.ratio)}</strong>${spread(row)}</td></tr>`
-).join("")
-document.querySelector("#perf-note").textContent = `${data.benchmark.node} · ${data.benchmark.platform}. ${data.benchmark.methodology}.`
-
-document.querySelector("#size-note").textContent = data.sizes.boundary
-document.querySelector("#size-body").innerHTML = [
-  ["@itslil/cn", data.sizes.lil, data.sizes.ratio.brotli11],
-  ["official cn", data.sizes.official, 1],
-].map(([name, size, r]) => `<tr><th>${name}</th><td>${format.format(size.raw)}</td><td>${format.format(size.gzip9)}</td><td>${format.format(size.brotli11)}</td><td class="verdict ${r <= 1 ? "win" : "loss"}"><strong>${ratio(r)}</strong></td></tr>`).join("")
-
+import {renderComparison} from './objective-comparison.js';
+const comparison=await fetch('./comparison.json').then(r=>{if(!r.ok)throw Error('Comparison failed to load');return r.json()});
+renderComparison(comparison);
+const lil=await import('./cn.js'),official=await import('./official.js');
+const ratio=value=>value.toFixed(2)+'×';
 const samples = [
   "px-2 py-1 px-4",
   "hover:md:p-2 md:hover:p-4 focus:p-3",

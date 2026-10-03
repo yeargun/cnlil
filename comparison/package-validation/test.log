@@ -1,0 +1,4 @@
+pass: 56353  fail: 0  (100.000%)
+idempotence failures: 0, cached/uncached mismatches: 0, cn-join failures: 0
+fuzz: 300000 cases, 0 mismatches
+join: pass 60005  fail 0

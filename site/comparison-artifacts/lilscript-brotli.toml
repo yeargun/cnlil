@@ -27,20 +27,12 @@ codecs = "brotli"
 identifiers = true
 properties = false
 pool_strings = true
+
 [delivery]
 mode = "single"
-directory = "."
-entry_names = "[name].js"
+host_modules = "embed"
+entry_names = "index.mjs"
 [delivery.entries]
-index = "src/index.lil"
-lite = "src/lite.lil"
-[[delivery.also]]
-name = "cjs"
-format = "cjs"
-entry_names = "[name].cjs"
-
-[policy.resources]
-logical_work = 2000000000
-
+index = "/home/azureuser/lilscript-rebuild-reports/2026-10-03-site-refresh/ports/cnlil/src/index.lil"
 [execution]
 jobs = 1
